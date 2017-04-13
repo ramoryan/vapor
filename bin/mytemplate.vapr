@@ -1,0 +1,44 @@
+$myvar: juhúúú
+$another: $myvar
+$third: fasz $another picsa
+
+!5
+html
+	head		
+		meta(name="description" content="vapor - golang html template system")
+		link(rel="stylesheet" type="text/css" href='css/index.css')
+		script(src='js/index.js')
+	body
+		header
+			div(id='my-id') Szöveg
+				div
+				|Még több szöveg.
+				| A HTML-t nem érdekli az új sor, ezek egymás mellett lesznek.
+				|      A whitespace meg minket nem érdekel :D
+				br Viszont így már új sorban
+
+			div(class='bd-link bd-link--black')
+			input(type="text")
+			input(type="checkbox" checked)
+			img(src="images/img.jpg")
+		footer
+			#my-shorthand-id
+			.my-shorthand-class
+			
+			div
+				#my-2nd-id.my-2nd-class
+				.my-3rd-class#my-3rd-id
+				
+			div				
+				form.bd-form
+					label(for="input-id")
+					input#input-id
+
+					div
+						input.input#input
+						button#submit-btn.btn-class
+						
+			div(style="border: 1px solid black; background-color: #eee;")
+			
+			$nawtf: images/img.jpg
+			img(src="$nawtf")

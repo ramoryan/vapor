@@ -1,0 +1,100 @@
+// parser
+package vapor
+
+import (
+	"bufio"
+	"log"
+	"os"
+	"strings"
+)
+
+type parser struct {
+	parent vaporizer
+	last   vaporizer
+	tree   []vaporizer
+	output string
+}
+
+func (p *parser) parseFile(fileName string) {
+	file, err := os.Open(fileName)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer file.Close()
+
+	p.parseLines(file)
+}
+
+func (p *parser) parseLines(file *os.File) {
+	scanner := bufio.NewScanner(file)
+
+	// végig a sorokon
+	for scanner.Scan() {
+		raw := scanner.Text()          // a nyers text
+		trim := strings.TrimSpace(raw) // trimmelt text
+
+		// üres sor
+		if len(trim) <= 0 {
+			continue
+		}
+
+		// új változó
+		if isVariableInitializer(trim) {
+			parseVariable(trim)
+			continue
+		}
+
+		// valamilyen elem
+		var v vaporizer
+
+		if strings.HasPrefix(trim, "!5") {
+			v = newDoctype(raw)
+		} else if strings.HasPrefix(trim, "html") {
+			v = newHtml(raw)
+		} else if strings.HasPrefix(trim, "head") && !strings.HasPrefix(trim, "header") {
+			v = newHead(raw)
+		} else if strings.HasPrefix(trim, "meta") {
+			v = newMeta(raw)
+		} else if isText(trim) {
+			v = newText(raw)
+		} else if isVoidElement(trim) { // void / selfclosed element?
+			v = newVoidElement(raw)
+		} else {
+			v = newElement(raw)
+		}
+
+		indent := v.getIndent()
+
+		if indent <= 0 { // megy a fa következő ágának
+			p.parent = nil
+			p.tree = append(p.tree, v)
+		} else if indent > p.last.getIndent() { // ez az új parent
+			v.setParent(p.last)
+			p.parent = v
+			p.last.addChild(v)
+		} else if indent == p.last.getIndent() { // a legútobbi parent kell
+			v.setParent(p.last.getParent())
+			p.last.getParent().addChild(v)
+		} else if indent < p.last.getIndent() { // megkeressük az indent alapján ezt megelőző parentet
+			for p.parent != nil && p.parent.getIndent() >= indent {
+				p.parent = p.parent.getParent()
+			}
+
+			v.setParent(p.parent)
+			p.parent.addChild(v)
+		}
+
+		p.last = v
+	}
+
+	for _, el := range p.tree {
+		p.output += el.render()
+	}
+}
+
+func newParser() *parser {
+	p := new(parser)
+	return p
+}
