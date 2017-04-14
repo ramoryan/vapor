@@ -26,14 +26,6 @@ func calcIndent(s string) int {
 	return i
 }
 
-func isMultilineAttrCloser(s string) bool {
-	if len(s) == 1 && s == ")" {
-		return true
-	}
-
-	return false
-}
-
 func unquote(s string) string {
 	un, err := strconv.Unquote(s)
 

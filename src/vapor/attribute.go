@@ -30,6 +30,14 @@ func parseAttribute(s string) (name, value string) {
 	return parts[0], ""
 }
 
+func isMultilineAttrCloser(s string) bool {
+	if len(s) == 1 && s == ")" {
+		return true
+	}
+
+	return false
+}
+
 func newAttribute(name, value string) attribute {
 	value = unquote(value)
 	a := attribute{name: name, value: interpolateVariables(value)}

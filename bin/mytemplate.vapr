@@ -50,9 +50,9 @@ html
 
 		div 
 			input(
-			type="text"
-			value="defaultValue"
-			placeholder="Type something"
+				type="text"
+				value="defaultValue"
+				placeholder="Type something"
 			)
 		
 			#my-id(
@@ -92,3 +92,14 @@ html
 			<!--[if gt IE 8]><!-->
 			div.modern
 			<!--<![endif]-->
+			
+		div						
+			// for
+				if
+				else
+				+mixin()	
+				@myFunction()
+				
+				@function új függvény létrehozása
+				=mixin új mixin létrehozása
+

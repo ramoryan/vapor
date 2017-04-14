@@ -24,15 +24,20 @@ func (p *parser) parseFile(fileName string) {
 
 	defer file.Close()
 
-	p.parseLines(file)
-}
+	lines := make([]string, 0)
 
-func (p *parser) parseLines(file *os.File) {
 	scanner := bufio.NewScanner(file)
 
-	// végig a sorokon
 	for scanner.Scan() {
-		raw := scanner.Text()          // a nyers text
+		lines = append(lines, scanner.Text())
+	}
+
+	p.parseLines(lines)
+}
+
+func (p *parser) parseLines(lines []string) {
+	// végig a sorokon
+	for _, raw := range lines {
 		trim := strings.TrimSpace(raw) // trimmelt text
 		indent := calcIndent(raw)
 
@@ -82,8 +87,21 @@ func (p *parser) parseLines(file *os.File) {
 			v = newVoidElement(raw)
 		} else if isComment(trim) {
 			v = newComment(raw)
+		} else if isLoop(trim) {
+			v = handleLoop(trim, indent)
 		} else if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
 			(p.last).(*comment).addContent(raw) // az előzőt castoljuk commentté és hozzáadjuk a szöveget, mint tartalom
+			continue
+		} else if p.last != nil && isContainerType(p.last) {
+			container := (p.last).(*container)
+
+			if indent > p.last.getIndent() {
+				// gyűjtjük a sorokat
+				container.addContent(raw)
+			} else {
+				// végrehajtjuk
+			}
+
 			continue
 		} else {
 			v = newElement(raw)
