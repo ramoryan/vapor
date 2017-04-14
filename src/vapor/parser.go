@@ -34,6 +34,7 @@ func (p *parser) parseLines(file *os.File) {
 	for scanner.Scan() {
 		raw := scanner.Text()          // a nyers text
 		trim := strings.TrimSpace(raw) // trimmelt text
+		indent := calcIndent(raw)
 
 		// üres sor
 		if len(trim) <= 0 {
@@ -46,7 +47,25 @@ func (p *parser) parseLines(file *os.File) {
 			continue
 		}
 
-		// valamilyen elem
+		// multiline attribútumokat vár
+		if p.last != nil && p.last.needMultilineAttrs() {
+			parIndent := p.last.getIndent()
+
+			// le akarjuk zárni
+			if isMultilineAttrCloser(trim) && indent == parIndent {
+				p.last.closeMultilineAttrs()
+			} else { // újat akarunk hozzáadni
+				if indent == parIndent+8 {
+					p.last.addAttr(parseAttribute(trim))
+				} else {
+					// indent error
+				}
+			}
+
+			continue
+		}
+
+		// valamilyen elem vagy comment
 		var v vaporizer
 
 		if strings.HasPrefix(trim, "!5") {
@@ -61,11 +80,14 @@ func (p *parser) parseLines(file *os.File) {
 			v = newText(raw)
 		} else if isVoidElement(trim) { // void / selfclosed element?
 			v = newVoidElement(raw)
+		} else if isComment(trim) {
+			v = newComment(raw)
+		} else if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
+			(p.last).(*comment).addContent(raw) // az előzőt castoljuk commentté és hozzáadjuk a szöveget, mint tartalom
+			continue
 		} else {
 			v = newElement(raw)
 		}
-
-		indent := v.getIndent()
 
 		if indent <= 0 { // megy a fa következő ágának
 			p.parent = nil

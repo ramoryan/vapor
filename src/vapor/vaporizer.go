@@ -9,4 +9,6 @@ type vaporizer interface {
 	addChild(v vaporizer)
 	setIndent(indent int)
 	addAttr(name, value string)
+	needMultilineAttrs() bool
+	closeMultilineAttrs()
 }

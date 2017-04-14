@@ -6,31 +6,16 @@ import (
 )
 
 type element struct {
-	attributes []attribute
-	children   []vaporizer
-	parent     vaporizer
-	name       string
-	indent     int
-	raw        string
-	isVoid     bool
-	attrFields []string
-	inlineText string
-}
-
-func (e *element) calcIndent() {
-	i := 0
-
-	for _, c := range e.raw {
-		if c == 32 {
-			i += 1
-		} else if c == 9 {
-			i = ((i + 8) / 8) * 8
-		} else if c != 13 {
-			break
-		}
-	}
-
-	e.indent = i
+	attributes    []attribute
+	children      []vaporizer
+	parent        vaporizer
+	name          string
+	indent        int
+	raw           string
+	isVoid        bool
+	attrFields    []string
+	inlineText    string
+	needMoreAttrs bool
 }
 
 func (e *element) render() string {
@@ -42,18 +27,29 @@ func (e *element) render() string {
 		s += " " + attr.render()
 	}
 
-	s += ">\n"
+	s += ">"
 
-	if len(e.inlineText) > 0 {
-		s += renderIndent(e.indent+8) + e.inlineText + "\n"
-	}
+	hasText := len(e.inlineText) > 0
+	hasChildren := len(e.children) > 0
 
-	for _, child := range e.children {
-		s += child.render()
+	if hasText || hasChildren || e.isVoid {
+		s += "\n"
+
+		if hasText {
+			s += renderIndent(e.indent+8) + e.inlineText + "\n"
+		}
+
+		for _, child := range e.children {
+			s += child.render()
+		}
 	}
 
 	if !e.isVoid {
-		s += spc + "</" + e.name + ">\n"
+		if hasText || hasChildren {
+			s += spc + "</" + e.name + ">\n"
+		} else {
+			s += "</" + e.name + ">\n"
+		}
 	}
 
 	return s
@@ -210,11 +206,35 @@ func (e *element) resolveShortCuts(name string) {
 	}
 }
 
+func (e *element) resolveMultilineAttrOpener() {
+	s := e.name
+
+	if strings.Contains(s, "(") && !strings.Contains(s, ")") { // nyitni akar multilinet?
+		if strings.Contains(s, " ") || !strings.HasSuffix(s, "(") {
+			// parse error
+		} else {
+			e.needMoreAttrs = true
+			s = strings.Replace(s, "(", "", -1)
+		}
+	}
+
+	e.name = s
+}
+
+func (e *element) needMultilineAttrs() bool {
+	return e.needMoreAttrs
+}
+
+func (e *element) closeMultilineAttrs() {
+	e.needMoreAttrs = false
+}
+
 func newElement(raw string) *element {
 	e := &element{raw: raw}
-	e.calcIndent()
+	e.indent = calcIndent(raw)
 	e.splitToFields()
 	e.setAttributes()
+	e.resolveMultilineAttrOpener()
 	e.resolveShortCuts(e.name)
 
 	return e
