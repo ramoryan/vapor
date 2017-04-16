@@ -102,4 +102,9 @@ html
 				
 				@function új függvény létrehozása
 				=mixin új mixin létrehozása
+				
+			for 0 to 4
+				a
+									
+					
 

@@ -20,7 +20,7 @@ func (c *container) render() string {
 	return p.output
 }
 
-func newContainer(indent int) vaporizer {
+func newContainer(indent int) *container {
 	c := &container{element: &element{}}
 	c.indent = indent
 	return c
@@ -29,9 +29,5 @@ func newContainer(indent int) vaporizer {
 func isContainerType(v vaporizer) bool {
 	t := reflect.TypeOf(v).String()
 
-	if t == "*vapor.container" {
-		return true
-	}
-
-	return false
+	return (t == "*vapor.container")
 }

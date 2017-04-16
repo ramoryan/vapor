@@ -36,6 +36,8 @@ func (p *parser) parseFile(fileName string) {
 }
 
 func (p *parser) parseLines(lines []string) {
+	firstIndent := -1
+
 	// végig a sorokon
 	for _, raw := range lines {
 		trim := strings.TrimSpace(raw) // trimmelt text
@@ -70,7 +72,24 @@ func (p *parser) parseLines(lines []string) {
 			continue
 		}
 
-		// valamilyen elem vagy comment
+		// comment
+		if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
+			(p.last).(*comment).addContent(raw) // az előzőt castoljuk commentté és hozzáadjuk a szöveget, mint tartalom
+			continue
+		} else if p.last != nil && isLoopContainerType(p.last) {
+			container := (p.last).(*loopContainer)
+
+			if indent > p.last.getIndent() {
+				// gyűjtjük a sorokat
+				container.addContent(raw)
+			} else {
+				// végrehajtjuk
+			}
+
+			continue
+		}
+
+		// valamilyen elem
 		var v vaporizer
 
 		if strings.HasPrefix(trim, "!5") {
@@ -88,27 +107,17 @@ func (p *parser) parseLines(lines []string) {
 		} else if isComment(trim) {
 			v = newComment(raw)
 		} else if isLoop(trim) {
-			v = handleLoop(trim, indent)
-		} else if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
-			(p.last).(*comment).addContent(raw) // az előzőt castoljuk commentté és hozzáadjuk a szöveget, mint tartalom
-			continue
-		} else if p.last != nil && isContainerType(p.last) {
-			container := (p.last).(*container)
-
-			if indent > p.last.getIndent() {
-				// gyűjtjük a sorokat
-				container.addContent(raw)
-			} else {
-				// végrehajtjuk
-			}
-
-			continue
+			v = newLoopContainer(trim, indent)
 		} else {
 			v = newElement(raw)
 		}
 
-		if indent <= 0 { // megy a fa következő ágának
-			p.parent = nil
+		if firstIndent == -1 { // a fájl első sora
+			firstIndent = indent
+		}
+
+		if indent == firstIndent { // megy a fa következő ágának
+			/*p.parent = nil*/
 			p.tree = append(p.tree, v)
 		} else if indent > p.last.getIndent() { // ez az új parent
 			v.setParent(p.last)

@@ -27,11 +27,17 @@ func calcIndent(s string) int {
 }
 
 func unquote(s string) string {
-	un, err := strconv.Unquote(s)
-
-	if err != nil {
-		return s
+	if un, err := strconv.Unquote(s); err == nil {
+		return un
 	}
 
-	return un
+	return s
+}
+
+func strToInt(s string, def int) int {
+	if i, err := strconv.Atoi(s); err == nil {
+		return i
+	}
+
+	return def
 }
