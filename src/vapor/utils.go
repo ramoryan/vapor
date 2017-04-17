@@ -41,3 +41,12 @@ func strToInt(s string, def int) int {
 
 	return def
 }
+
+func intToStr(i int, def string) string {
+	return strconv.Itoa(i)
+	/*if s, err := strconv.Itoa(i); err == nil {
+		return i
+	}
+
+	return def*/
+}

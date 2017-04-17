@@ -76,12 +76,12 @@ func (p *parser) parseLines(lines []string) {
 		if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
 			(p.last).(*comment).addContent(raw) // az előzőt castoljuk commentté és hozzáadjuk a szöveget, mint tartalom
 			continue
-		} else if p.last != nil && isLoopContainerType(p.last) {
-			container := (p.last).(*loopContainer)
+		} else if p.last != nil && isLoopBlockType(p.last) && indent > p.last.getIndent() {
+			block := (p.last).(*loopBlock)
 
 			if indent > p.last.getIndent() {
 				// gyűjtjük a sorokat
-				container.addContent(raw)
+				block.addContent(raw)
 			} else {
 				// végrehajtjuk
 			}
@@ -107,7 +107,7 @@ func (p *parser) parseLines(lines []string) {
 		} else if isComment(trim) {
 			v = newComment(raw)
 		} else if isLoop(trim) {
-			v = newLoopContainer(trim, indent)
+			v = newLoopBlock(trim, indent)
 		} else {
 			v = newElement(raw)
 		}

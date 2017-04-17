@@ -8,18 +8,24 @@ import (
 
 // for 1 to 4
 
-type loopContainer struct {
-	*container
-	from int
-	to   int
+type loopBlock struct {
+	*block
+	varName string
+	from    int
+	to      int
 }
 
-func (l *loopContainer) render() string {
-	s := l.container.render()
+func (l *loopBlock) render() string {
 	res := ""
 
 	for i := l.from; i <= l.to; i++ {
+		s := l.block.render()
 		res += s
+
+		val := strToInt(getVariable(l.varName), 0)
+		val += 1
+
+		setVariable(l.varName, intToStr(val, ""))
 	}
 
 	return res
@@ -33,18 +39,32 @@ func isLoop(s string) bool {
 	return false
 }
 
-func newLoopContainer(s string, indent int) *loopContainer {
+// TODO:
+// validáció: from > to
+//            to < from
+func newLoopBlock(s string, indent int) *loopBlock {
 	f := strings.Fields(s)
 
-	c := &loopContainer{container: newContainer(indent)}
-	c.from = strToInt(f[1], 0)
-	c.to = strToInt(f[3], 0)
+	name, from := parseVariable(f[1])
 
-	return c
+	l := &loopBlock{block: newBlock(indent)}
+	l.from = strToInt(from, 0)
+
+	to, found := findVariable(f[3])
+
+	if found {
+		l.to = strToInt(to, 0)
+	} else {
+		l.to = strToInt(f[3], 0)
+	}
+
+	l.varName = name
+
+	return l
 }
 
-func isLoopContainerType(v vaporizer) bool {
+func isLoopBlockType(v vaporizer) bool {
 	t := reflect.TypeOf(v).String()
 
-	return (t == "*vapor.loopContainer")
+	return (t == "*vapor.loopBlock")
 }

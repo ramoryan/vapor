@@ -3,6 +3,8 @@ $myvar: juhúúú
 $another: $myvar
 $third: kakaoscsiga $another lekvarosbukta
 
+div(a="$myvar" b="$another" c="$third")
+
 // alap, html5 doctype
 !5
 html
@@ -46,7 +48,7 @@ html
 	
 			div(style="border: 1px solid black; background-color: #eee;")
 				$nawtf: images/img.jpg
-				img(src="$nawtf")
+				img(src="#{$nawtf}")
 
 		div 
 			input(
@@ -103,8 +105,15 @@ html
 				@function új függvény létrehozása
 				=mixin új mixin létrehozása
 				
-			for 0 to 4
-				a
+			// TODO: space kezelése a változódeklarálásnál
+			for $i:0 to 5
+				div
+					for $j:0 to $i						
+						img(src="images/image-#{$j}.jpg")						
+						
+					// ez meg minden div-ben egyszer szerepel
+					input(style="border: #{$i}px solid red")
+					
 									
 					
 
