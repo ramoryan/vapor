@@ -1,0 +1,122 @@
+// változók kezelése
+$myvar: juhúúú
+$another: $myvar
+$third: kakaoscsiga $another lekvarosbukta
+
+div(a="$myvar" b="$another" c="$third")
+
+// alap, html5 doctype
+!5
+html
+	// head, default meta attribútumokkal
+	head
+		meta(name="description" content="vapor - golang html template system")
+		link(rel="stylesheet" type="text/css" href='css/index.css')
+		script(src='js/index.js')
+		
+	/* ez a comment meg fog jelenni a html-ben
+	body
+		include html/myplainhtml.html
+		include vapr/myvapr.vapr		
+					
+		header
+			div(id='my-id') Szöveg
+			div
+			|Még több szöveg.
+			| A HTML-t nem érdekli az új sor, ezek egymás mellett lesznek.
+			|      A whitespace meg minket nem érdekel :D
+			br Viszont így már új sorban
+
+		div(class='bd-link bd-link--black')
+			input(type="text")
+			input(type="checkbox" checked)
+			img(src="images/img.jpg")
+		
+		footer
+			#my-shorthand-id
+			.my-shorthand-class
+
+			div
+				#my-2nd-id.my-2nd-class
+				.my-3rd-class#my-3rd-id
+
+			div
+				form.bd-form
+					label(for="input-id")
+					input#input-id
+
+			div
+				input.input#input
+				button#submit-btn.btn-class
+	
+			div(style="border: 1px solid black; background-color: #eee;")
+				$nawtf: images/img.jpg
+				img(src="#{$nawtf}")
+
+		div 
+			input(
+				type="text"
+				value="defaultValue"
+				placeholder="Type something"
+			)
+		
+			#my-id(
+				class="my-class"
+			)
+			
+			.my-class(
+				id="my-id"
+			)
+				| Text
+			
+			input#input-id.input-class(
+				type="checkbox"
+				checked
+			)
+			
+		div						
+			// nem látható vapor comment
+				több sorban
+				és még ez sem látható
+					ez sem látható
+					
+			/* többsoros comment teszt
+				na lássuk
+				jujjdejó
+					ez is ott lesz, hiába van jobban behúzva
+					
+			<!-- natív html comment -->
+			<!-- natív html comment
+				több sorban -->
+				
+			// jajj, még ez a szörnyűség is megy :D				
+				
+			<!--[if IE 8]>
+			div.ie8
+			<![endif]-->
+			<!--[if gt IE 8]><!-->
+			div.modern
+			<!--<![endif]-->
+			
+		div						
+			// for
+				if
+				else
+				+mixin()	
+				@myFunction()
+				
+				@function új függvény létrehozása
+				=mixin új mixin létrehozása
+				
+			// TODO: space kezelése a változódeklarálásnál
+			for $i:0 to 5
+				div
+					for $j:0 to $i						
+						img(src="images/image-#{$j}.jpg")						
+						
+					// ez meg minden div-ben egyszer szerepel
+					input(style="border: #{$i}px solid red")
+					
+									
+					
+
