@@ -42,13 +42,16 @@ func include(str string) *htmlContent {
 
 		h := newHtmlContent(string(b))
 		return h
-	} else if strings.HasSuffix(path, ".vapr") {
+	} else {
+		if !strings.HasSuffix(path, ".vapr") {
+			path += ".vapr"
+		}
+
 		p := newParser()
 		p.parseFile(path)
 		h := newHtmlContent(p.output)
 		return h
-	} else {
-		// ERROR
-		return nil
 	}
+
+	return nil
 }

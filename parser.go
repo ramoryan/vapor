@@ -95,6 +95,14 @@ func (p *parser) parseLines(lines []string) {
 
 			if p.last != nil && p.last.getIndent() < indent {
 				p.last.addChild(inc)
+			} else {
+				par := p.parent
+
+				for par != nil && par.getIndent() >= indent {
+					par = par.getParent()
+				}
+
+				par.addChild(inc)
 			}
 
 			continue
