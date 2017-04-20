@@ -108,7 +108,7 @@ func (p *parser) parseLines(lines []string) {
 			continue
 		}
 
-		// valamilyen elem
+		// valamilyen elem vagy shortcut
 		var v vaporizer
 
 		if strings.HasPrefix(trim, "!5") {
@@ -128,7 +128,12 @@ func (p *parser) parseLines(lines []string) {
 		} else if isLoop(trim) {
 			v = newLoopBlock(trim, indent)
 		} else {
-			v = newElement(raw)
+			v = resolveShortcut(trim)
+
+			// nem shortcut
+			if v == nil {
+				v = newElement(raw)
+			}
 		}
 
 		if firstIndent == -1 { // a fájl első sora
