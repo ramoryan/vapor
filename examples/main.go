@@ -8,6 +8,11 @@ import (
 )
 
 func main() {
-	out := vapor.ParseFile("./mytemplate.vapr")
-	fmt.Println(out)
+	out, err := vapor.ParseFile("./mytemplate.vapr")
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(out)
+	}
 }

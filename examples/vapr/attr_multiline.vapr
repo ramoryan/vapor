@@ -1,0 +1,20 @@
+div 
+	input(
+		type="text"
+		value="defaultValue"
+		placeholder="Type something"
+	)
+
+	#my-id(
+		class="my-class"
+	)
+	
+	.my-class(
+		id="my-id"
+	)
+		| Text
+	
+	input#input-id.input-class(
+		type="checkbox"
+		checked
+	)

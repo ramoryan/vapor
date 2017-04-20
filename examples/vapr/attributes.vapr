@@ -1,0 +1,4 @@
+div(class='bd-link bd-link--black')
+	input(type="text")
+	input(type="checkbox" checked)
+	img(src="images/img.jpg")

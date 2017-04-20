@@ -65,7 +65,7 @@ func (p *parser) parseLines(lines []string) error {
 				if indent == parIndent+8 {
 					p.last.addAttr(parseAttribute(trim))
 				} else {
-					// indent error
+					return errors.New("Syntax error! You have to close the multiline attributes before: " + trim)
 				}
 			}
 
@@ -82,8 +82,6 @@ func (p *parser) parseLines(lines []string) error {
 			if indent > p.last.getIndent() {
 				// gyűjtjük a sorokat
 				block.addContent(raw)
-			} else {
-				// végrehajtjuk
 			}
 
 			continue

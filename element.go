@@ -151,7 +151,6 @@ func (e *element) setAttributes() {
 
 			if len(pair) > 1 {
 				val := pair[1]
-				val = unquote(val)
 
 				e.addAttr(attrName, val)
 			} else {

@@ -34,6 +34,15 @@ func unquote(s string) string {
 	return s
 }
 
+func isLetter(s string) bool {
+	for _, r := range s {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') {
+			return false
+		}
+	}
+	return true
+}
+
 func strToInt(s string, def int) int {
 	if i, err := strconv.Atoi(s); err == nil {
 		return i

@@ -22,8 +22,9 @@ func setVariable(name, value string) {
 
 func parseVariable(str string) (name, value string) {
 	s := str[strings.Index(str, "$")+1:]
-	name = strings.TrimSpace(s[:strings.Index(s, "=")])
-	value = strings.TrimSpace(s[strings.Index(s, "=")+1:])
+	index := strings.Index(s, "=")
+	name = strings.TrimSpace(s[:index])
+	value = strings.TrimSpace(s[index+1:])
 
 	if variables == nil {
 		variables = make(map[string]string)

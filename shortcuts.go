@@ -13,6 +13,11 @@ func resolveShortcut(s string) vaporizer {
 		if name == "css" {
 			e := newVoidElement("")
 			e.name = "link"
+
+			if !strings.HasSuffix(value, ".css") {
+				value += ".css"
+			}
+
 			e.addAttr("href", value)
 			e.addAttr("rel", "stylesheet")
 			e.addAttr("type", "text/css")
@@ -21,6 +26,11 @@ func resolveShortcut(s string) vaporizer {
 		} else if name == "js" {
 			e := newElement("")
 			e.name = "script"
+
+			if !strings.HasSuffix(value, ".js") {
+				value += ".js"
+			}
+
 			e.addAttr("src", value)
 
 			return e

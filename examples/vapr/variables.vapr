@@ -1,0 +1,6 @@
+// változók kezelése
+$myvar = juhúúú
+$another = $myvar
+$third = kakaoscsiga $another lekvarosbukta
+
+div(a="$myvar" b="$another" c="$third")

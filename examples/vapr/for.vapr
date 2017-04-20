@@ -1,0 +1,9 @@
+div													
+	// TODO: space kezelése a változódeklarálásnál
+	for $i=0 to 5
+		div
+			for $j=0 to $i						
+				img(src="images/image-#{$j}.jpg")						
+				
+			// ez meg minden div-ben egyszer szerepel
+			input(style="border: #{$i}px solid red")

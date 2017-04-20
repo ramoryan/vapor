@@ -1,0 +1,23 @@
+div						
+	// nem látható vapor comment
+		több sorban
+		és még ez sem látható
+			ez sem látható
+			
+	/* többsoros comment teszt
+		na lássuk
+		jujjdejó
+			ez is ott lesz, hiába van jobban behúzva
+			
+	<!-- natív html comment -->
+	<!-- natív html comment
+		több sorban -->
+		
+	// jajj, még ez a szörnyűség is megy :D				
+		
+	<!--[if IE 8]>
+	div.ie8
+	<![endif]-->
+	<!--[if gt IE 8]><!-->
+	div.modern
+	<!--<![endif]-->
