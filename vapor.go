@@ -1,8 +1,13 @@
 // vapor project vapor.go
 package vapor
 
-func ParseFile(fileName string) string {
+func ParseFile(fileName string) (string, error) {
 	p := newParser()
-	p.parseFile(fileName)
-	return p.output
+	err := p.parseFile(fileName)
+
+	if err != nil {
+		return "", err
+	}
+
+	return p.output, nil
 }

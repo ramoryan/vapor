@@ -11,7 +11,7 @@ func resolveShortcut(s string) vaporizer {
 		value := s[pos+1:]
 
 		if name == "css" {
-			e := newElement("")
+			e := newVoidElement("")
 			e.name = "link"
 			e.addAttr("href", value)
 			e.addAttr("rel", "stylesheet")
@@ -28,6 +28,16 @@ func resolveShortcut(s string) vaporizer {
 			m := newMeta("")
 			m.addAttr("property", name)
 			m.addAttr("content", value)
+
+			return m
+		} else if name == "keywords" || name == "author" || name == "description" {
+			m := newMeta("")
+			m.addAttr("name", name)
+			m.addAttr("content", value)
+
+			if name == "description" && len(value) > 160 {
+				// error
+			}
 
 			return m
 		}

@@ -81,6 +81,10 @@ func (e *element) getParent() vaporizer {
 	return e.parent
 }
 
+func (e *element) getName() string {
+	return e.name
+}
+
 func (e *element) splitToFields() {
 	s := strings.TrimSpace(e.raw)
 	attrStart := strings.Index(s, "(")
@@ -126,6 +130,13 @@ func (e *element) splitToFields() {
 			e.name = s
 		}
 	}
+
+	// comment lehetőség a taggel egy sorban
+	if len(e.inlineText) > 0 {
+		if pos := strings.Index(e.inlineText, "//"); pos >= 0 {
+			e.inlineText = strings.TrimSpace(e.inlineText[:pos])
+		}
+	}
 }
 
 func (e *element) setAttributes() {
@@ -140,7 +151,7 @@ func (e *element) setAttributes() {
 
 			if len(pair) > 1 {
 				val := pair[1]
-				val = strings.Trim(strings.Trim(val, `"`), `'`)
+				val = unquote(val)
 
 				e.addAttr(attrName, val)
 			} else {

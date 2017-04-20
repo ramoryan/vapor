@@ -3,7 +3,7 @@ package vapor
 
 import (
 	"bufio"
-	"log"
+	"errors"
 	"os"
 	"strings"
 )
@@ -15,11 +15,11 @@ type parser struct {
 	output string
 }
 
-func (p *parser) parseFile(fileName string) {
+func (p *parser) parseFile(fileName string) error {
 	file, err := os.Open(fileName)
 
 	if err != nil {
-		log.Fatal(err)
+		return newVaporError("Cannot open " + fileName)
 	}
 
 	defer file.Close()
@@ -32,10 +32,10 @@ func (p *parser) parseFile(fileName string) {
 		lines = append(lines, scanner.Text())
 	}
 
-	p.parseLines(lines)
+	return p.parseLines(lines)
 }
 
-func (p *parser) parseLines(lines []string) {
+func (p *parser) parseLines(lines []string) error {
 	firstIndent := -1
 
 	// végig a sorokon
@@ -91,7 +91,11 @@ func (p *parser) parseLines(lines []string) {
 
 		// include html vagy vapor file
 		if isInclude(trim) {
-			inc := include(trim)
+			inc, err := include(trim)
+
+			if err != nil {
+				return errors.New(err.Error() + "\n" + trim)
+			}
 
 			if p.last != nil && p.last.getIndent() < indent {
 				p.last.addChild(inc)
@@ -165,6 +169,8 @@ func (p *parser) parseLines(lines []string) {
 	for _, el := range p.tree {
 		p.output += el.render()
 	}
+
+	return nil
 }
 
 func newParser() *parser {

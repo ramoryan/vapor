@@ -31,27 +31,32 @@ func isInclude(str string) bool {
 	return strings.HasPrefix(str, "include")
 }
 
-func include(str string) *htmlContent {
+func include(str string) (*htmlContent, error) {
 	path := strings.TrimSpace(strings.TrimPrefix(str, "include"))
 
 	if strings.HasSuffix(path, ".html") {
 		b, err := ioutil.ReadFile(path)
 		if err != nil {
-			// hibakezelés
+			return nil, newVaporError("Cannot include " + path)
 		}
 
 		h := newHtmlContent(string(b))
-		return h
+		return h, nil
 	} else {
 		if !strings.HasSuffix(path, ".vapr") {
 			path += ".vapr"
 		}
 
 		p := newParser()
-		p.parseFile(path)
+		err := p.parseFile(path)
+
+		if err != nil {
+			return nil, err
+		}
+
 		h := newHtmlContent(p.output)
-		return h
+		return h, nil
 	}
 
-	return nil
+	return nil, nil
 }
