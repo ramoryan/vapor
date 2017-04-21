@@ -39,7 +39,7 @@ func isMultilineAttrCloser(s string) bool {
 }
 
 func newAttribute(name, value string) attribute {
-	value = unquote(value)
+	value = strings.Trim(unquote(value), "'") // hack, ezt az unquote-nak meg kéne oldania!
 	a := attribute{name: name, value: interpolateVariables(value)}
 	return a
 }

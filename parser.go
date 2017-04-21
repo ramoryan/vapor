@@ -129,6 +129,8 @@ func (p *parser) parseLines(lines []string) error {
 			v = newComment(raw)
 		} else if isLoop(trim) {
 			v = newLoopBlock(trim, indent)
+		} else if isFilter(trim) {
+			v = newText(resolveFilters(trim))
 		} else {
 			v = resolveShortcut(trim)
 

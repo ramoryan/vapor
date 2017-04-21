@@ -30,7 +30,7 @@ func parseVariable(str string) (name, value string) {
 		variables = make(map[string]string)
 	}
 
-	value = interpolateVariables(value)
+	value = resolveFilters(interpolateVariables(value))
 
 	variables[name] = value
 
@@ -60,6 +60,16 @@ func getVariable(name string) string {
 
 	if !ok {
 		fmt.Println("variable doesn't exists:", name)
+	}
+
+	return value
+}
+
+func getVariableSafe(name string) string {
+	value, ok := findVariable(name)
+
+	if !ok {
+		return name
 	}
 
 	return value

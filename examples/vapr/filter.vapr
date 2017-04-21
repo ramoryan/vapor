@@ -1,0 +1,15 @@
+:upper Ez itt a szöveg
+:lower EZ MEG KISBETŰS LESZ
+:trim:title         ez trimmelve lesz és nagybetűs minden karakter          
+:capitalize az első karakter itt nagybetűs lesz. 
+
+$var = :upper:trim           ez változóban tárolt, nagybetűs szöveg, trimmelve
+
+input(placeholder="$var")
+
+:lower $var
+
+:url_encode http://www.akarmi.hu?query=nagybetűs
+:url_encode:url_encode http://www.akarmi.hu?query=nagybetűs
+
+:nl2br A mai nap éppen\nMegfelelő arra\nHogy a hangya a Holdra szálljon

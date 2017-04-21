@@ -10,12 +10,15 @@ html
 		css css/mycssfile
 		js js/myjsfile
 	body
-		include html/myplainhtml.html
-		include vapr/variables.vapr		
-		include vapr/text.vapr
-		include vapr/attributes
-		include vapr/attr_shortcuts
-		include vapr/attr_multiline
-		include vapr/comment
-		include vapr/for
+		include vapr/filter
+	
+		//
+			include html/myplainhtml.html
+			include vapr/variables.vapr		
+			include vapr/text.vapr
+			include vapr/attributes
+			include vapr/attr_shortcuts
+			include vapr/attr_multiline
+			include vapr/comment
+			include vapr/for
 
