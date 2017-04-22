@@ -34,6 +34,10 @@ func unquote(s string) string {
 	return s
 }
 
+func isBetweenQuotes(s string) bool {
+	return (strings.HasPrefix(s, `"`) && strings.HasSuffix(s, `"`)) || (strings.HasPrefix(s, `'`) && strings.HasSuffix(s, `'`))
+}
+
 func isLetter(s string) bool {
 	for _, r := range s {
 		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') {

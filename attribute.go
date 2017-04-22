@@ -39,7 +39,14 @@ func isMultilineAttrCloser(s string) bool {
 }
 
 func newAttribute(name, value string) attribute {
-	value = strings.Trim(unquote(value), "'") // hack, ezt az unquote-nak meg kéne oldania!
-	a := attribute{name: name, value: interpolateVariables(value)}
+	if !isBetweenQuotes(value) && strings.HasPrefix(value, "$") { // it's a variable
+		value = resolveVariables(value)
+	} else {
+		value = interpolateVariables(strings.Trim(unquote(value), "'")) // hack, ezt az unquote-nak meg kéne oldania!
+	}
+
+	name = interpolateVariables(name)
+
+	a := attribute{name: name, value: value}
 	return a
 }

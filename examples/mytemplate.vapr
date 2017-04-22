@@ -1,20 +1,23 @@
 !5
-html	
-	head
-		title Vapor		
-		meta(name="description" content="vapor - golang html template system")
-		link(rel="stylesheet" type="text/css" href='css/index.css')
-		script(src='js/index.js')	
-		og:title fittipaldi
-		
-		css css/mycssfile
-		js js/myjsfile
+html
+	//
+		head
+			title Vapor
+			meta(name="description" content="vapor - golang html template system")
+			link(rel="stylesheet" type="text/css" href='css/index.css')
+			script(src='js/index.js')
+			og:title fittipaldi
+
+			css css/mycssfile
+			js js/myjsfile
 	body
-		include vapr/filter
-	
+		include vapr/variables.vapr
+
+		// include vapr/filter
+
 		//
 			include html/myplainhtml.html
-			include vapr/variables.vapr		
+
 			include vapr/text.vapr
 			include vapr/attributes
 			include vapr/attr_shortcuts

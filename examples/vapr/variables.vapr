@@ -3,4 +3,30 @@ $myvar = juhúúú
 $another = $myvar
 $third = kakaoscsiga $another lekvarosbukta
 
-div(a="$myvar" b="$another" c="$third")
+$size =     1
+
+div(
+	a="$myvar"
+	b="$another"
+	c="$third"
+	d="#{$size}px solid red"
+)
+
+div
+	| #{$third}
+
+$n = 1
+$type = solid
+$interpolateMe = átalakítja!
+$ebbolmilesz = disabled
+$class = juhúúú
+
+div
+	input(
+		id="$id"
+		class=$class
+		style="#{ $n }px #{ $type } red"
+		#{$ebbolmilesz}
+	)
+	| Kakaóscsiga $eztbékénhagyja lekvárosbukta
+	| Ezt viszont #{ $interpolateMe }

@@ -30,17 +30,40 @@ func parseVariable(str string) (name, value string) {
 		variables = make(map[string]string)
 	}
 
-	value = resolveFilters(interpolateVariables(value))
+	value = resolveFilters(resolveVariables(interpolateVariables(value)))
 
 	variables[name] = value
 
 	return name, value
 }
 
-func interpolateVariables(str string) (res string) {
-	if pos := strings.Index(str, "$"); pos >= 0 { // van változó
-		s := str[pos+1:] // $ jeltől lemásoljuk
-		res += str[:pos] // a $ jelig másoljuk a kimenetbe
+func interpolateVariables(str string) string {
+	if pos := strings.Index(str, "#{"); pos >= 0 {
+		res := str[:pos]    // copy util #{
+		from := str[pos+2:] // copy from #{
+
+		if to := strings.Index(from, "}"); to > 0 {
+			varName := strings.TrimSpace(from[:to])
+			v := getVariable(varName)
+
+			rest := from[to+1:]
+
+			res += v + rest
+		} else {
+			// error
+		}
+
+		return interpolateVariables(res)
+	}
+
+	return str
+}
+
+func resolveVariables(str string) string {
+	if pos := strings.Index(str, "$"); pos >= 0 { // got variable
+		res := ""
+		s := str[pos+1:] // copy from $
+		res += str[:pos] // copy util $
 
 		if n := strings.IndexAny(s, " $@#&(){}[];:,./"); n >= 0 {
 			res += getVariable(s[:n])
@@ -49,7 +72,7 @@ func interpolateVariables(str string) (res string) {
 			res += getVariable(s)
 		}
 
-		return interpolateVariables(res)
+		return resolveVariables(res)
 	}
 
 	return str

@@ -38,30 +38,30 @@ func (p *parser) parseFile(fileName string) error {
 func (p *parser) parseLines(lines []string) error {
 	firstIndent := -1
 
-	// végig a sorokon
+	// trough the lines
 	for _, raw := range lines {
 		trim := strings.TrimSpace(raw) // trimmelt text
 		indent := calcIndent(raw)
 
-		// üres sor
+		// empty line
 		if len(trim) <= 0 {
 			continue
 		}
 
-		// új változó
+		// new variable
 		if isVariableInitializer(trim) {
 			parseVariable(trim)
 			continue
 		}
 
-		// multiline attribútumokat vár
+		// is collecting multiline attributes?
 		if p.last != nil && p.last.needMultilineAttrs() {
 			parIndent := p.last.getIndent()
 
-			// le akarjuk zárni
+			// we want to close it
 			if isMultilineAttrCloser(trim) && indent == parIndent {
 				p.last.closeMultilineAttrs()
-			} else { // újat akarunk hozzáadni
+			} else { // adds a new attr
 				if indent == parIndent+8 {
 					p.last.addAttr(parseAttribute(trim))
 				} else {
@@ -74,20 +74,20 @@ func (p *parser) parseLines(lines []string) error {
 
 		// comment
 		if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
-			(p.last).(*comment).addContent(raw) // az előzőt castoljuk commentté és hozzáadjuk a szöveget, mint tartalom
+			(p.last).(*comment).addContent(raw) // cast last one to comment and add this line as content
 			continue
 		} else if p.last != nil && isLoopBlockType(p.last) && indent > p.last.getIndent() {
 			block := (p.last).(*loopBlock)
 
 			if indent > p.last.getIndent() {
-				// gyűjtjük a sorokat
+				// collect more rows
 				block.addContent(raw)
 			}
 
 			continue
 		}
 
-		// include html vagy vapor file
+		// include html or vapor file
 		if isInclude(trim) {
 			inc, err := include(trim)
 
@@ -110,7 +110,7 @@ func (p *parser) parseLines(lines []string) error {
 			continue
 		}
 
-		// valamilyen elem vagy shortcut
+		// html element or shortcut
 		var v vaporizer
 
 		if strings.HasPrefix(trim, "!5") {
@@ -121,40 +121,39 @@ func (p *parser) parseLines(lines []string) error {
 			v = newHead(raw)
 		} else if strings.HasPrefix(trim, "meta") {
 			v = newMeta(raw)
-		} else if isText(trim) {
+		} else if isText(trim) { // text
 			v = newText(raw)
 		} else if isVoidElement(trim) { // void / selfclosed element?
 			v = newVoidElement(raw)
-		} else if isComment(trim) {
+		} else if isComment(trim) { // comment
 			v = newComment(raw)
-		} else if isLoop(trim) {
+		} else if isLoop(trim) { // for loop
 			v = newLoopBlock(trim, indent)
-		} else if isFilter(trim) {
+		} else if isFilter(trim) { // filter
 			v = newText(resolveFilters(trim))
 		} else {
 			v = resolveShortcut(trim)
 
-			// nem shortcut
+			// not shortcut
 			if v == nil {
 				v = newElement(raw)
 			}
 		}
 
-		if firstIndent == -1 { // a fájl első sora
+		if firstIndent == -1 { // first parsable line
 			firstIndent = indent
 		}
 
-		if indent == firstIndent { // megy a fa következő ágának
-			/*p.parent = nil*/
+		if indent == firstIndent { // new branch of the tree
 			p.tree = append(p.tree, v)
-		} else if indent > p.last.getIndent() { // ez az új parent
+		} else if indent > p.last.getIndent() { // new parent
 			v.setParent(p.last)
 			p.parent = v
 			p.last.addChild(v)
-		} else if indent == p.last.getIndent() { // a legútobbi parent kell
+		} else if indent == p.last.getIndent() { // the last parent needed
 			v.setParent(p.last.getParent())
 			p.last.getParent().addChild(v)
-		} else if indent < p.last.getIndent() { // megkeressük az indent alapján ezt megelőző parentet
+		} else if indent < p.last.getIndent() { // searching for last parent by indent
 			for p.parent != nil && p.parent.getIndent() >= indent {
 				p.parent = p.parent.getParent()
 			}

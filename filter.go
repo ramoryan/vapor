@@ -11,6 +11,10 @@ func isFilter(s string) bool {
 }
 
 func resolveFilters(s string) string {
+	if !isFilter(s) {
+		return s
+	}
+
 	spc := strings.Index(s, " ")
 	filters := s[:spc]
 	content := s[spc+1:]

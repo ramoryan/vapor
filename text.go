@@ -16,7 +16,7 @@ func (t *text) render() string {
 
 func newText(raw string) *text {
 	t := &text{newElement(raw)}
-	t.inlineText = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(t.raw), "|"))
+	t.inlineText = interpolateVariables(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(t.raw), "|")))
 	return t
 }
 
