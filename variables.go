@@ -30,6 +30,7 @@ func parseVariable(str string) (name, value string) {
 		variables = make(map[string]string)
 	}
 
+	value = removeComment(value)
 	value = resolveFilters(resolveVariables(interpolateVariables(value)))
 
 	variables[name] = value
