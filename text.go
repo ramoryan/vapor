@@ -14,17 +14,18 @@ func (t *text) render() string {
 	return renderIndent(t.indent) + t.inlineText + "\n"
 }
 
-func newText(raw string) *text {
+func newText(raw string) (*text, *vaporError) {
 	e, _ := newElement(raw)
 	t := &text{element: e}
-	t.inlineText = interpolateVariables(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(t.raw), "|")))
-	return t
+	txt, err := interpolateVariables(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(t.raw), "|")))
+	if err != nil {
+		return nil, err
+	}
+
+	t.inlineText = txt
+	return t, nil
 }
 
 func isText(s string) bool {
-	if strings.HasPrefix(s, "|") {
-		return true
-	}
-
-	return false
+	return strings.HasPrefix(s, "|")
 }

@@ -138,7 +138,7 @@ func (p *parser) parseLines(lines []string) *vaporError {
 		} else if strings.HasPrefix(trim, "meta") {
 			v = newMeta(raw)
 		} else if isText(trim) { // text
-			v = newText(raw)
+			v, err = newText(raw)
 		} else if isVoidElement(trim) { // void / selfclosed element?
 			v = newVoidElement(raw)
 		} else if isComment(trim) { // comment
@@ -151,7 +151,7 @@ func (p *parser) parseLines(lines []string) *vaporError {
 				return p.extendErr(err)
 			}
 
-			v = newText(s)
+			v, err = newText(s)
 		} else {
 			v = resolveShortcut(trim)
 

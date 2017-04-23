@@ -3,11 +3,13 @@ package vapor
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
 // var isAllowedStr = regexp.MustCompile(`^[A-Za-z0-9]+$`).MatchString
+var rgxMultipleSpaces = regexp.MustCompile(`[\s\p{Zs}]{2,}`)
 
 func renderIndent(i int) string {
 	return strings.Repeat(" ", i)
@@ -69,4 +71,26 @@ func intToStr(i int, def string) string {
 
 func log(f interface{}) {
 	fmt.Println(f)
+}
+
+// Helpers for testing
+
+func hasAttrAndValue(v vaporizer, attrName, attrValue string) bool {
+	for _, a := range v.getAttributes() {
+		if a.name == attrName && a.value == attrValue {
+			return true
+		}
+	}
+
+	return false
+}
+
+func removeMultipleSpaces(s string) string {
+	return rgxMultipleSpaces.ReplaceAllString(s, "")
+}
+
+func clearStrStrMap(m map[string]string) {
+	for k := range m {
+		delete(m, k)
+	}
 }

@@ -69,9 +69,16 @@ func (e *element) addChild(v vaporizer) *vaporError {
 	return nil
 }
 
+func (e *element) getAttributes() []attribute {
+	return e.attributes
+}
+
+func (e *element) getChildren() []vaporizer {
+	return e.children
+}
+
 func (e *element) addAttr(name, value string) *vaporError {
 	a, err := newAttribute(name, value)
-
 	if err != nil {
 		return err
 	}
@@ -79,6 +86,10 @@ func (e *element) addAttr(name, value string) *vaporError {
 	e.attributes = append(e.attributes, a)
 
 	return nil
+}
+
+func (e *element) addAttrQ(name, value string) *vaporError {
+	return e.addAttr(name, `"`+value+`"`)
 }
 
 func (e *element) setIndent(indent int) {
@@ -170,30 +181,45 @@ func (e *element) setAttributes() (err *vaporError) {
 	return err
 }
 
-func (e *element) resolveShortCuts(name string) {
+// TODO: fkin great refact needed!
+func (e *element) resolveShortCuts(name string) (err *vaporError) {
 	if strings.HasPrefix(name, "#") {
-		id := name[1:] // leszedjük a # -t
+		id := name[1:] // remove #
 
 		if pos := strings.Index(id, "."); pos > 0 {
 			class := id[pos+1:]
 			id = id[:pos]
 
-			e.addAttr("class", class)
+			err = e.addAttrQ("class", class)
+			if err != nil {
+				return err
+			}
 		}
 
-		e.addAttr("id", id)
+		err = e.addAttrQ("id", id)
+		if err != nil {
+			return err
+		}
+
 		e.name = "div"
 	} else if strings.HasPrefix(name, ".") {
-		class := name[1:] // leszedjük a . -t
+		class := name[1:] // remove .
 
 		if pos := strings.Index(class, "#"); pos > 0 {
 			id := class[pos+1:]
 			class = class[:pos]
 
-			e.addAttr("id", id)
+			err = e.addAttrQ("id", id)
+			if err != nil {
+				return err
+			}
 		}
 
-		e.addAttr("class", class)
+		err = e.addAttrQ("class", class)
+		if err != nil {
+			return err
+		}
+
 		e.name = "div"
 	} else if pos := strings.Index(name, "#"); pos > 0 {
 		id := name[pos+1:]
@@ -203,12 +229,23 @@ func (e *element) resolveShortCuts(name string) {
 			class := id[classPos+1:]
 			id = id[:classPos]
 
-			e.addAttr("class", class)
+			err = e.addAttrQ("class", class)
+			if err != nil {
+				return err
+			}
 		}
 
-		e.addAttr("id", id)
+		err = e.addAttrQ("id", id)
+		if err != nil {
+			return err
+		}
+
 		e.name = name
-		e.resolveShortCuts(name)
+
+		err := e.resolveShortCuts(name)
+		if err != nil {
+			return err
+		}
 	} else if pos := strings.Index(name, "."); pos > 0 {
 		class := name[pos+1:]
 		name = name[:pos]
@@ -217,13 +254,26 @@ func (e *element) resolveShortCuts(name string) {
 			id := class[idPos+1:]
 			class = class[:idPos]
 
-			e.addAttr("id", id)
+			err = e.addAttrQ("id", id)
+			if err != nil {
+				return err
+			}
 		}
 
-		e.addAttr("class", class)
+		err = e.addAttrQ("class", class)
+		if err != nil {
+			return err
+		}
+
 		e.name = name
-		e.resolveShortCuts(name)
+
+		err = e.resolveShortCuts(name)
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func (e *element) resolveMultilineAttrOpener() {
@@ -260,7 +310,11 @@ func newElement(raw string) (e *element, err *vaporError) {
 	}
 
 	e.resolveMultilineAttrOpener()
-	e.resolveShortCuts(e.name)
+
+	err = e.resolveShortCuts(e.name)
+	if err != nil {
+		return e, err
+	}
 
 	return e, nil
 }

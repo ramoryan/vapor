@@ -38,8 +38,12 @@ func parseVariable(str string) (name, value string, e *vaporError) {
 	value = strings.TrimSpace(s[index+1:])
 
 	var err *vaporError
+	value, err = interpolateVariables(value)
+	if err != nil {
+		return "", "", err
+	}
 
-	value, err = resolveVariables(interpolateVariables(value))
+	value, err = resolveVariables(value)
 	if err != nil {
 		return "", "", err
 	}
@@ -54,26 +58,28 @@ func parseVariable(str string) (name, value string, e *vaporError) {
 	return name, value, nil
 }
 
-func interpolateVariables(str string) string {
+func interpolateVariables(str string) (string, *vaporError) {
 	if pos := strings.Index(str, "#{"); pos >= 0 {
 		res := str[:pos]    // copy util #{
 		from := str[pos+2:] // copy from #{
 
 		if to := strings.Index(from, "}"); to > 0 {
 			varName := strings.TrimSpace(from[:to])
-			v, _ := getVariable(varName)
+			v, err := getVariable(varName)
+			if err != nil {
+				return "", err
+			}
 
 			rest := from[to+1:]
-
 			res += v + rest
 		} else {
-			// error
+			return "", newVaporError(ERR_VARIABLE, 4, "You have to close variable interpoltion!")
 		}
 
 		return interpolateVariables(res)
 	}
 
-	return str
+	return str, nil
 }
 
 func resolveVariables(str string) (string, *vaporError) {

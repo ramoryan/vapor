@@ -55,11 +55,17 @@ func newAttribute(name, value string) (a attribute, err *vaporError) {
 				return a, newVaporError(ERR_ATTR, 2, "Quotes must be used if you want to add text!")
 			}
 		} else { // attr="text" or attr="#{ $text }"
-			value = interpolateVariables(strings.Trim(unquote(value), "'")) // hack, ezt az unquote-nak meg kéne oldania!
+			value, err = interpolateVariables(strings.Trim(unquote(value), "'")) // hack, ezt az unquote-nak meg kéne oldania!
+			if err != nil {
+				return a, err
+			}
 		}
 	}
 
-	name = interpolateVariables(name) // #{$attr} or attr, TODO: #{   $attr }
+	name, err = interpolateVariables(name) // #{$attr} or attr, TODO: #{   $attr }
+	if err != nil {
+		return a, err
+	}
 
 	a = attribute{name: name, value: value}
 	return a, err
