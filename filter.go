@@ -10,9 +10,9 @@ func isFilter(s string) bool {
 	return strings.HasPrefix(s, ":")
 }
 
-func resolveFilters(s string) string {
+func resolveFilters(s string) (string, *vaporError) {
 	if !isFilter(s) {
-		return s
+		return s, nil
 	}
 
 	spc := strings.Index(s, " ")
@@ -22,30 +22,39 @@ func resolveFilters(s string) string {
 	filterNames := strings.Split(filters, ":")
 
 	for _, name := range filterNames {
-		content = resolveFilter(name, getVariableSafe(content))
+		if len(name) <= 0 {
+			continue // TODO: hack?
+		}
+
+		res, err := resolveFilter(name, getVariableSafe(content))
+		if err != nil {
+			return "", err
+		}
+
+		content = res
 	}
 
-	return content
+	return content, nil
 }
 
-func resolveFilter(name, content string) string {
+func resolveFilter(name, content string) (string, *vaporError) {
 	if name == "upper" {
-		return strings.ToUpper(content)
+		return strings.ToUpper(content), nil
 	} else if name == "lower" {
-		return strings.ToLower(content)
+		return strings.ToLower(content), nil
 	} else if name == "trim" {
-		return strings.TrimSpace(content)
+		return strings.TrimSpace(content), nil
 	} else if name == "title" {
-		return strings.Title(content)
+		return strings.Title(content), nil
 	} else if name == "capitalize" {
-		return strings.ToUpper(string(content[0])) + content[1:]
+		return strings.ToUpper(string(content[0])) + content[1:], nil
 	} else if name == "nl2br" {
-		return strings.Replace(content, "\n", "<br>", -1)
+		return strings.Replace(content, "\n", "<br>", -1), nil
 	} else if name == "url_encode" {
 		content, _ = url.QueryUnescape(content)
 
-		return url.QueryEscape(content)
+		return url.QueryEscape(content), nil
 	}
 
-	return content
+	return "", newVaporError(ERR_FILTER, 1, "Filter is not defined: "+name)
 }

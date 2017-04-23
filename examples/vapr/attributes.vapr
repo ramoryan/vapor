@@ -2,3 +2,12 @@ div(class='bd-link bd-link--black')
 	input(type="text")
 	input(type="checkbox" checked)
 	img(src="images/img.jpg")
+
+$myclass = mano
+div(class=$myclass)
+
+div(class="myclass")
+
+$attr = id
+
+div(#{$attr}="my-id")

@@ -35,7 +35,8 @@ var voidElements = []string{
 }
 
 func newVoidElement(raw string) *void {
-	v := &void{newElement(raw)}
+	e, _ := newElement(raw)
+	v := &void{element: e}
 	v.isVoid = true
 	return v
 }

@@ -24,7 +24,7 @@ func resolveShortcut(s string) vaporizer {
 
 			return e
 		} else if name == "js" {
-			e := newElement("")
+			e, _ := newElement("")
 			e.name = "script"
 
 			if !strings.HasSuffix(value, ".js") {

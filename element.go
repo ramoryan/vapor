@@ -63,14 +63,22 @@ func (e *element) setParent(v vaporizer) {
 	e.parent = v
 }
 
-func (e *element) addChild(v vaporizer) {
+func (e *element) addChild(v vaporizer) *vaporError {
 	e.children = append(e.children, v)
 	v.setIndent(e.indent + 8)
+	return nil
 }
 
-func (e *element) addAttr(name, value string) {
-	a := newAttribute(name, value)
+func (e *element) addAttr(name, value string) *vaporError {
+	a, err := newAttribute(name, value)
+
+	if err != nil {
+		return err
+	}
+
 	e.attributes = append(e.attributes, a)
+
+	return nil
 }
 
 func (e *element) setIndent(indent int) {
@@ -139,7 +147,7 @@ func (e *element) splitToFields() {
 	}
 }
 
-func (e *element) setAttributes() {
+func (e *element) setAttributes() (err *vaporError) {
 	attrs := e.attrFields
 
 	if len(attrs) > 0 {
@@ -152,12 +160,14 @@ func (e *element) setAttributes() {
 			if len(pair) > 1 {
 				val := pair[1]
 
-				e.addAttr(attrName, val)
+				err = e.addAttr(attrName, val)
 			} else {
 				e.addAttr(attrName, "")
 			}
 		}
 	}
+
+	return err
 }
 
 func (e *element) resolveShortCuts(name string) {
@@ -239,13 +249,18 @@ func (e *element) closeMultilineAttrs() {
 	e.needMoreAttrs = false
 }
 
-func newElement(raw string) *element {
-	e := &element{raw: raw}
+func newElement(raw string) (e *element, err *vaporError) {
+	e = &element{raw: raw}
 	e.indent = calcIndent(raw)
 	e.splitToFields()
-	e.setAttributes()
+
+	err = e.setAttributes()
+	if err != nil {
+		return e, err
+	}
+
 	e.resolveMultilineAttrOpener()
 	e.resolveShortCuts(e.name)
 
-	return e
+	return e, nil
 }

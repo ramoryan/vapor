@@ -6,7 +6,8 @@ type doctype struct {
 }
 
 func newDoctype(raw string) *doctype {
-	d := &doctype{newElement(raw)}
+	e, _ := newElement(raw)
+	d := &doctype{element: e}
 	d.name = "!DOCTYPE"
 	d.addAttr("html", "")
 	d.isVoid = true

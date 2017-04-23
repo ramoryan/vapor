@@ -22,17 +22,18 @@ func (l *loopBlock) render() string {
 		s := l.block.render()
 		res += s
 
-		val := strToInt(getVariable(l.varName), 0)
-		val += 1
+		strValue, _ := getVariable(l.varName)
+		intVal := strToInt(strValue, 0)
+		intVal += 1
 
-		setVariable(l.varName, intToStr(val, ""))
+		setVariable(l.varName, intToStr(intVal, ""))
 	}
 
 	return res
 }
 
 func isLoop(s string) bool {
-	if strings.HasPrefix(s, "for") && strings.Index(s, " to ") > 0 {
+	if strings.HasPrefix(s, "for ") && strings.Index(s, " to ") > 0 {
 		return true
 	}
 
@@ -43,19 +44,34 @@ func isLoop(s string) bool {
 // validáció: from > to
 //            to < from
 func newLoopBlock(s string, indent int) *loopBlock {
-	f := strings.Fields(s)
+	if strings.Index(s, "for ") < 0 {
+		// error
+	}
 
-	name, from := parseVariable(f[1])
+	s = strings.TrimSpace(strings.TrimLeft(s, "for"))
+
+	toStart := strings.Index(s, "to")
+
+	if toStart < 0 {
+		// error
+	}
+
+	// from
+	fromStr := strings.TrimSpace(s[:toStart])
+	name, from, _ := parseVariable(fromStr)
 
 	l := &loopBlock{block: newBlock(indent)}
 	l.from = strToInt(from, 0)
 
-	to, found := findVariable(f[3])
+	// to
+	toStr := strings.TrimSpace(s[toStart+2:])
+
+	to, found := findVariable(toStr)
 
 	if found {
 		l.to = strToInt(to, 0)
 	} else {
-		l.to = strToInt(f[3], 0)
+		l.to = strToInt(toStr, 0)
 	}
 
 	l.varName = name

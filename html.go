@@ -9,13 +9,21 @@ type html struct {
 	*element
 }
 
-func newHtml(raw string) *html {
-	h := &html{newElement(raw)}
+func newHtml(raw string) (*html, *vaporError) {
+	e, err := newElement(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	h := &html{element: e}
 	h.name = "html"
 
 	if strings.Index(raw, "lang") < 0 {
-		h.addAttr("lang", "en")
+		err := h.addAttr("lang", `"en"`)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return h
+	return h, nil
 }

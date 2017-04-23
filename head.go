@@ -12,14 +12,23 @@ type head struct {
 
 var validHeadChildren = []string{"title", "base", "link", "style", "meta", "script", "noscript"}
 
-func (h *head) addMeta(name, value string) *meta {
+func (h *head) addMeta(name, value string) (*meta, *vaporError) {
 	m := newMeta("")
-	m.addAttr(name, value)
-	h.addChild(m)
-	return m
+
+	err := m.addAttr(name, value)
+	if err != nil {
+		return nil, err
+	}
+
+	err = h.addChild(m)
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
 
-func (h *head) addChild(v vaporizer) {
+func (h *head) addChild(v vaporizer) *vaporError {
 	name := v.getName()
 
 	sort.Strings(validHeadChildren)
@@ -28,16 +37,33 @@ func (h *head) addChild(v vaporizer) {
 	if i < len(validHeadChildren) && validHeadChildren[i] == name {
 		h.element.addChild(v)
 	} else {
-		// éktelen haragra gerjedés :)
+		return newVaporError(ERR_HEAD, 1, "Not valid tag: "+name)
 	}
+
+	return nil
 }
 
-func newHead(raw string) *head {
-	h := &head{newElement(raw)}
+func newHead(raw string) (*head, *vaporError) {
+	e, err := newElement(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	h := &head{element: e}
 	h.name = "head"
 
-	h.addMeta("charset", "utf-8")
-	h.addMeta("name", "viewport").addAttr("content", "width=device-width, initial-scale=1.0")
+	_, err = h.addMeta("charset", `"utf-8"`)
+	if err != nil {
+		return nil, err
+	}
 
-	return h
+	var m *meta
+	m, err = h.addMeta("name", `"viewport"`)
+	if err != nil {
+		return nil, err
+	}
+
+	m.addAttr("content", `"width=device-width, initial-scale=1.0"`)
+
+	return h, nil
 }

@@ -6,10 +6,10 @@ type vaporizer interface {
 	getIndent() int
 	getParent() vaporizer
 	setParent(v vaporizer)
-	addChild(v vaporizer)
+	addChild(v vaporizer) *vaporError
 	getName() string
 	setIndent(indent int)
-	addAttr(name, value string)
+	addAttr(name, value string) *vaporError
 	needMultilineAttrs() bool
 	closeMultilineAttrs()
 }

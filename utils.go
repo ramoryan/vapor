@@ -2,9 +2,12 @@
 package vapor
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
+
+// var isAllowedStr = regexp.MustCompile(`^[A-Za-z0-9]+$`).MatchString
 
 func renderIndent(i int) string {
 	return strings.Repeat(" ", i)
@@ -62,4 +65,8 @@ func intToStr(i int, def string) string {
 	}
 
 	return def*/
+}
+
+func log(f interface{}) {
+	fmt.Println(f)
 }

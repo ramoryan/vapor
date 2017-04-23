@@ -6,7 +6,8 @@ type meta struct {
 }
 
 func newMeta(raw string) *meta {
-	m := &meta{newElement(raw)}
+	e, _ := newElement(raw)
+	m := &meta{element: e}
 	m.name = "meta"
 	m.isVoid = true
 	return m

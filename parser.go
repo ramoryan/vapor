@@ -3,23 +3,26 @@ package vapor
 
 import (
 	"bufio"
-	"errors"
 	"os"
 	"strings"
 )
 
 type parser struct {
-	parent vaporizer
-	last   vaporizer
-	tree   []vaporizer
-	output string
+	actLine    string
+	actLineNum int
+	parent     vaporizer
+	last       vaporizer
+	tree       []vaporizer
+	fileName   string
+	output     string
 }
 
-func (p *parser) parseFile(fileName string) error {
+func (p *parser) parseFile(fileName string) *vaporError {
+	p.fileName = fileName
 	file, err := os.Open(fileName)
 
 	if err != nil {
-		return newVaporError("Cannot open " + fileName)
+		return newVaporError(ERR_PARSER, 1, "Cannot open "+fileName)
 	}
 
 	defer file.Close()
@@ -35,12 +38,20 @@ func (p *parser) parseFile(fileName string) error {
 	return p.parseLines(lines)
 }
 
-func (p *parser) parseLines(lines []string) error {
+func (p *parser) extendErr(err *vaporError) *vaporError {
+	return err.addErrorLine(p.actLine).addFileName(p.fileName).addErrLineNum(p.actLineNum)
+}
+
+func (p *parser) parseLines(lines []string) *vaporError {
+	var err *vaporError
 	firstIndent := -1
 
 	// trough the lines
 	for _, raw := range lines {
+		p.actLineNum++ // for error
+		raw = removeComment(raw)
 		trim := strings.TrimSpace(raw) // trimmelt text
+		p.actLine = trim               // for error
 		indent := calcIndent(raw)
 
 		// empty line
@@ -50,7 +61,11 @@ func (p *parser) parseLines(lines []string) error {
 
 		// new variable
 		if isVariableInitializer(trim) {
-			parseVariable(trim)
+			_, _, err := parseVariable(trim)
+			if err != nil {
+				return p.extendErr(err)
+			}
+
 			continue
 		}
 
@@ -65,7 +80,9 @@ func (p *parser) parseLines(lines []string) error {
 				if indent == parIndent+8 {
 					p.last.addAttr(parseAttribute(trim))
 				} else {
-					return errors.New("Syntax error! You have to close the multiline attributes before: " + trim)
+					return newVaporError(ERR_PARSER, 2, "Syntax error! You have to close the multiline attributes before: "+trim).
+						addFileName(p.fileName).
+						addErrLineNum(p.actLineNum)
 				}
 			}
 
@@ -90,9 +107,8 @@ func (p *parser) parseLines(lines []string) error {
 		// include html or vapor file
 		if isInclude(trim) {
 			inc, err := include(trim)
-
 			if err != nil {
-				return errors.New(err.Error() + "\n" + trim)
+				return p.extendErr(err)
 			}
 
 			if p.last != nil && p.last.getIndent() < indent {
@@ -116,9 +132,9 @@ func (p *parser) parseLines(lines []string) error {
 		if strings.HasPrefix(trim, "!5") {
 			v = newDoctype(raw)
 		} else if strings.HasPrefix(trim, "html") {
-			v = newHtml(raw)
+			v, err = newHtml(raw)
 		} else if strings.HasPrefix(trim, "head") && !strings.HasPrefix(trim, "header") {
-			v = newHead(raw)
+			v, err = newHead(raw)
 		} else if strings.HasPrefix(trim, "meta") {
 			v = newMeta(raw)
 		} else if isText(trim) { // text
@@ -130,14 +146,23 @@ func (p *parser) parseLines(lines []string) error {
 		} else if isLoop(trim) { // for loop
 			v = newLoopBlock(trim, indent)
 		} else if isFilter(trim) { // filter
-			v = newText(resolveFilters(trim))
+			s, err := resolveFilters(trim)
+			if err != nil {
+				return p.extendErr(err)
+			}
+
+			v = newText(s)
 		} else {
 			v = resolveShortcut(trim)
 
 			// not shortcut
 			if v == nil {
-				v = newElement(raw)
+				v, err = newElement(raw)
 			}
+		}
+
+		if err != nil {
+			return p.extendErr(err)
 		}
 
 		if firstIndent == -1 { // first parsable line
