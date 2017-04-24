@@ -7,7 +7,7 @@ type vaporizer interface {
 	getParent() vaporizer
 	setParent(v vaporizer)
 	addChild(v vaporizer) *vaporError
-	getAttributes() []attribute
+	getAttributes() attrMap
 	getChildren() []vaporizer
 	getName() string
 	setIndent(indent int)

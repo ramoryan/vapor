@@ -5,8 +5,10 @@ import (
 	"unicode"
 )
 
+type attrMap map[string]attribute
+
 type element struct {
-	attributes    []attribute
+	attributes    attrMap
 	children      []vaporizer
 	parent        vaporizer
 	name          string
@@ -69,7 +71,7 @@ func (e *element) addChild(v vaporizer) *vaporError {
 	return nil
 }
 
-func (e *element) getAttributes() []attribute {
+func (e *element) getAttributes() attrMap {
 	return e.attributes
 }
 
@@ -83,7 +85,13 @@ func (e *element) addAttr(name, value string) *vaporError {
 		return err
 	}
 
-	e.attributes = append(e.attributes, a)
+	if e.attributes == nil {
+		e.attributes = make(attrMap)
+	} else if _, exists := e.attributes["foo"]; exists {
+		return newVaporError(ERR_ELEMENT, 5, "Attribute with this name has been already initialized: "+name)
+	}
+
+	e.attributes[name] = a
 
 	return nil
 }

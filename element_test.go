@@ -84,4 +84,27 @@ func TestNewElement(t *testing.T) {
 		t.Error(r)
 	}
 
+	// attributes with same name error
+	sameNameError := "Attributes with same name is not allowed!"
+
+	e, err = newElement(`div(id="my-id" id="my-id")`)
+	if err != nil {
+		t.Error(sameNameError)
+	}
+
+	e, err = newElement(`#my-id(id="my-id")`)
+	if err != nil {
+		t.Error(sameNameError)
+	}
+
+	e, err = newElement(`.my-class(class="my-class")`)
+	if err != nil {
+		t.Error(sameNameError)
+	}
+
+	setVariable("attrName", "id")
+	e, err = newElement(`#my-id(#{$attrName}="my-id")`)
+	if err != nil {
+		t.Error(sameNameError)
+	}
 }
