@@ -75,7 +75,7 @@ func log(f interface{}) {
 
 // Helpers for testing
 
-func hasAttrAndValue(v vaporizer, attrName, attrValue string) bool {
+func hasAttr(v vaporizer, attrName, attrValue string) bool {
 	for _, a := range v.getAttributes() {
 		if a.name == attrName && a.value == attrValue {
 			return true
