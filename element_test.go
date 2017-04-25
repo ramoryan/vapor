@@ -4,6 +4,18 @@ import (
 	"testing"
 )
 
+func BenchmarkNewElement(b *testing.B) {
+	clearStrStrMap(variables)
+	setVariable("ghost", "that you can see")
+
+	for i := 0; i < b.N; i++ {
+		_, err := newElement(`div#my-div(class="#{ $ghost }" disabled style="1px solid black") Ez meg itt szöveg`)
+		if err != nil {
+			break
+		}
+	}
+}
+
 func TestNewElement(t *testing.T) {
 	r := "Element is broken!"
 

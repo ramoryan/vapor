@@ -5,7 +5,10 @@ import (
 )
 
 func TestNewDoctype(t *testing.T) {
-	d := newDoctype("!5")
+	d, err := newDoctype("!5")
+	if err != nil {
+		t.Error(err)
+	}
 
 	if d.render() != "<!DOCTYPE html>\n" {
 		t.Error("Doctype has been broken!")

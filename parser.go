@@ -59,6 +59,11 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			continue
 		}
 
+		// too much indent
+		if p.last != nil && indent > p.last.getIndent()+8 && !isCommentType(p.last) && !isLoopBlockType(p.last) {
+			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
+		}
+
 		// new variable
 		if isVariableInitializer(trim) {
 			_, _, err := parseVariable(trim)
@@ -135,21 +140,21 @@ func (p *parser) parseLines(lines []string) *vaporError {
 		var v vaporizer
 
 		if strings.HasPrefix(trim, "!5") {
-			v = newDoctype(raw)
+			v, err = newDoctype(raw)
 		} else if strings.HasPrefix(trim, "html") {
 			v, err = newHtml(raw)
 		} else if strings.HasPrefix(trim, "head") && !strings.HasPrefix(trim, "header") {
 			v, err = newHead(raw)
 		} else if strings.HasPrefix(trim, "meta") {
-			v = newMeta(raw)
+			v, err = newMeta(raw)
 		} else if isText(trim) { // text
 			v, err = newText(raw)
 		} else if isVoidElement(trim) { // void / selfclosed element?
-			v = newVoidElement(raw)
+			v, err = newVoidElement(raw)
 		} else if isComment(trim) { // comment
 			v = newComment(raw)
 		} else if isLoop(trim) { // for loop
-			v = newLoopBlock(trim, indent)
+			v = newLoopBlock(trim, indent) // TODO: error!
 		} else if isFilter(trim) { // filter
 			s, err := resolveFilters(trim)
 			if err != nil {

@@ -13,7 +13,7 @@ type head struct {
 var validHeadChildren = []string{"title", "base", "link", "style", "meta", "script", "noscript"}
 
 func (h *head) addMeta(name, value string) (*meta, *vaporError) {
-	m := newMeta("")
+	m, _ := newMeta("")
 
 	err := m.addAttr(name, value)
 	if err != nil {

@@ -34,11 +34,14 @@ var voidElements = []string{
 	"wbr",
 }
 
-func newVoidElement(raw string) *void {
-	e, _ := newElement(raw)
+func newVoidElement(raw string) (*void, *vaporError) {
+	e, err := newElement(raw)
+	if err != nil {
+		return nil, err
+	}
 	v := &void{element: e}
 	v.isVoid = true
-	return v
+	return v, nil
 }
 
 func isVoidElement(s string) bool {

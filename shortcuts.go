@@ -11,7 +11,7 @@ func resolveShortcut(s string) vaporizer {
 		value := s[pos+1:]
 
 		if name == "css" {
-			e := newVoidElement("")
+			e, _ := newVoidElement("")
 			e.name = "link"
 
 			if !strings.HasSuffix(value, ".css") {
@@ -35,13 +35,13 @@ func resolveShortcut(s string) vaporizer {
 
 			return e
 		} else if strings.HasPrefix(name, "og:") { // http://ogp.me/
-			m := newMeta("")
+			m, _ := newMeta("")
 			m.addAttr("property", name)
 			m.addAttr("content", value)
 
 			return m
 		} else if name == "keywords" || name == "author" || name == "description" {
-			m := newMeta("")
+			m, _ := newMeta("")
 			m.addAttr("name", name)
 			m.addAttr("content", value)
 

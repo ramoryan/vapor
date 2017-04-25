@@ -1,0 +1,8 @@
+input#my-id(
+	type="checkbox"
+	class="my-class"
+	checked
+	style="1px solid red"
+	data-turboteddy="omg!"
+	disabled
+)

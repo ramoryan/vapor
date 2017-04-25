@@ -9,7 +9,10 @@ func TestNewVoidElement(t *testing.T) {
 	e := "VoidElement has been broken!"
 
 	for _, name := range voidElements {
-		v := newVoidElement(name)
+		v, err := newVoidElement(name)
+		if err != nil {
+			t.Error(err)
+		}
 
 		s := strings.Replace(v.render(), "\n", "", -1)
 
