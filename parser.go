@@ -78,7 +78,12 @@ func (p *parser) parseLines(lines []string) *vaporError {
 				p.last.closeMultilineAttrs()
 			} else { // adds a new attr
 				if indent == parIndent+8 {
-					p.last.addAttr(parseAttribute(trim))
+					name, value, err := parseAttribute(trim)
+					if err != nil {
+						return p.extendErr(err)
+					}
+
+					p.last.addAttr(name, value)
 				} else {
 					return newVaporError(ERR_PARSER, 2, "Syntax error! You have to close the multiline attributes before: "+trim).
 						addFileName(p.fileName).

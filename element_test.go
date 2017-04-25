@@ -107,4 +107,30 @@ func TestNewElement(t *testing.T) {
 	if err != nil {
 		t.Error(sameNameError)
 	}
+
+	// --- try to break it!
+
+	e, err = newElement(`div(alma=)`)
+	if err == nil {
+		t.Error("Attribute equation without value is not allowed!")
+	}
+
+	// TODO: error!
+	// e, err = newElement(`div(alma=""a)`)
+
+	// TODO: error!
+	// e, err = newElement(`div(alma=""`)
+
+	// TODO: error!
+	// e, err = newElement(`div()`)
+
+	e, err = newElement("#")
+	if err == nil {
+		t.Error("Id shortcut without value is not allowed!")
+	}
+
+	e, err = newElement(".")
+	if err == nil {
+		t.Error("Class shortcut without value is not allowed!")
+	}
 }

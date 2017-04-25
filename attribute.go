@@ -20,14 +20,18 @@ func (a *attribute) render() string {
 	return s
 }
 
-func parseAttribute(s string) (name, value string) {
+func parseAttribute(s string) (name, value string, err *vaporError) {
 	parts := strings.Split(s, "=")
 
 	if len(parts) > 1 {
-		return parts[0], parts[1]
+		if len(parts[1]) <= 0 {
+			return "", "", newVaporError(ERR_ATTR, 3, "Attribute equation without value!")
+		}
+
+		return parts[0], parts[1], nil
 	}
 
-	return parts[0], ""
+	return parts[0], "", nil
 }
 
 func isMultilineAttrCloser(s string) bool {

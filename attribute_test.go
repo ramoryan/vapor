@@ -50,12 +50,20 @@ func TestRender(t *testing.T) {
 func TestParseAttribute(t *testing.T) {
 	e := "Parse attribute has been broken!"
 
-	name, value := parseAttribute("checked")
+	name, value, err := parseAttribute("checked")
+	if err != nil {
+		t.Error(err)
+	}
+
 	if name != "checked" || len(value) != 0 {
 		t.Error(e)
 	}
 
-	name, value = parseAttribute(`class="my-class`)
+	name, value, err = parseAttribute(`class="my-class`)
+	if err != nil {
+		t.Error(err)
+	}
+
 	if name != "class" && value != "my-class" {
 		t.Error(e)
 	}

@@ -166,27 +166,27 @@ func (e *element) splitToFields() {
 	}
 }
 
-func (e *element) setAttributes() (err *vaporError) {
+func (e *element) setAttributes() *vaporError {
 	attrs := e.attrFields
 
 	if len(attrs) > 0 {
 		for i := 0; i < len(attrs); i++ {
 			field := attrs[i]
-			pair := strings.Split(field, "=")
 
-			attrName := pair[0]
+			name, value, err := parseAttribute(field)
 
-			if len(pair) > 1 {
-				val := pair[1]
+			if err != nil {
+				return err
+			}
 
-				err = e.addAttr(attrName, val)
-			} else {
-				e.addAttr(attrName, "")
+			err = e.addAttr(name, value)
+			if err != nil {
+				return err
 			}
 		}
 	}
 
-	return err
+	return nil
 }
 
 // TODO: fkin great refact needed!
@@ -198,10 +198,18 @@ func (e *element) resolveShortCuts(name string) (err *vaporError) {
 			class := id[pos+1:]
 			id = id[:pos]
 
+			if len(class) <= 0 {
+				return newVaporError(ERR_ELEMENT, 7, "Class shortcut has no value!")
+			}
+
 			err = e.addAttrQ("class", class)
 			if err != nil {
 				return err
 			}
+		}
+
+		if len(id) <= 0 {
+			return newVaporError(ERR_ELEMENT, 8, "Id shortcut has no value!")
 		}
 
 		err = e.addAttrQ("id", id)
@@ -217,10 +225,18 @@ func (e *element) resolveShortCuts(name string) (err *vaporError) {
 			id := class[pos+1:]
 			class = class[:pos]
 
+			if len(id) <= 0 {
+				return newVaporError(ERR_ELEMENT, 8, "Id shortcut has no value!")
+			}
+
 			err = e.addAttrQ("id", id)
 			if err != nil {
 				return err
 			}
+		}
+
+		if len(class) <= 0 {
+			return newVaporError(ERR_ELEMENT, 7, "Class shortcut has no value!")
 		}
 
 		err = e.addAttrQ("class", class)
@@ -237,10 +253,18 @@ func (e *element) resolveShortCuts(name string) (err *vaporError) {
 			class := id[classPos+1:]
 			id = id[:classPos]
 
+			if len(class) <= 0 {
+				return newVaporError(ERR_ELEMENT, 7, "Class shortcut has no value!")
+			}
+
 			err = e.addAttrQ("class", class)
 			if err != nil {
 				return err
 			}
+		}
+
+		if len(id) <= 0 {
+			return newVaporError(ERR_ELEMENT, 8, "Id shortcut has no value!")
 		}
 
 		err = e.addAttrQ("id", id)
@@ -262,10 +286,18 @@ func (e *element) resolveShortCuts(name string) (err *vaporError) {
 			id := class[idPos+1:]
 			class = class[:idPos]
 
+			if len(id) <= 0 {
+				return newVaporError(ERR_ELEMENT, 8, "Id shortcut has no value!")
+			}
+
 			err = e.addAttrQ("id", id)
 			if err != nil {
 				return err
 			}
+		}
+
+		if len(class) <= 0 {
+			return newVaporError(ERR_ELEMENT, 7, "Class shortcut has no value!")
 		}
 
 		err = e.addAttrQ("class", class)
