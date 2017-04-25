@@ -166,6 +166,16 @@ func (e *element) splitToFields() {
 	}
 }
 
+func (e *element) hasAttr(attrName, attrValue string) bool {
+	for _, a := range e.getAttributes() {
+		if a.name == attrName && a.value == attrValue {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (e *element) setAttributes() *vaporError {
 	attrs := e.attrFields
 

@@ -11,9 +11,9 @@ func TestNewHead(t *testing.T) {
 
 		if len(c) != 2 ||
 			c[0].getName() != "meta" || c[1].getName() != "meta" ||
-			!hasAttr(c[0], "charset", "utf-8") ||
-			!hasAttr(c[1], "name", "viewport") ||
-			!hasAttr(c[1], "content", "width=device-width, initial-scale=1.0") {
+			!c[0].hasAttr("charset", "utf-8") ||
+			!c[1].hasAttr("name", "viewport") ||
+			!c[1].hasAttr("content", "width=device-width, initial-scale=1.0") {
 			t.Error("Head has been broken!")
 		}
 	} else {

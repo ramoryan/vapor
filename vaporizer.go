@@ -14,4 +14,5 @@ type vaporizer interface {
 	addAttr(name, value string) *vaporError
 	needMultilineAttrs() bool
 	closeMultilineAttrs()
+	hasAttr(attrName, attrValue string) bool
 }

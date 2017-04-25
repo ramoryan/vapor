@@ -75,16 +75,6 @@ func log(f interface{}) {
 
 // Helpers for testing
 
-func hasAttr(v vaporizer, attrName, attrValue string) bool {
-	for _, a := range v.getAttributes() {
-		if a.name == attrName && a.value == attrValue {
-			return true
-		}
-	}
-
-	return false
-}
-
 func removeMultipleSpaces(s string) string {
 	return rgxMultipleSpaces.ReplaceAllString(s, "")
 }

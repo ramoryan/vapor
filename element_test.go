@@ -42,21 +42,21 @@ func TestNewElement(t *testing.T) {
 	// #.
 	e, err = newElement("#my-id.my-class")
 	a := e.getAttributes()
-	if err != nil || len(a) != 2 || !hasAttr(e, "id", "my-id") || !hasAttr(e, "class", "my-class") {
+	if err != nil || len(a) != 2 || !e.hasAttr("id", "my-id") || !e.hasAttr("class", "my-class") {
 		t.Error(r)
 	}
 
 	// .#
 	e, err = newElement(".my-class#my-id")
 	a = e.getAttributes()
-	if err != nil || len(a) != 2 || !hasAttr(e, "id", "my-id") || !hasAttr(e, "class", "my-class") {
+	if err != nil || len(a) != 2 || !e.hasAttr("id", "my-id") || !e.hasAttr("class", "my-class") {
 		t.Error(r)
 	}
 
 	// shortcuts with tag
 	e, err = newElement("input.my-inputClass#my-inputId")
 	a = e.getAttributes()
-	if err != nil || e.getName() != "input" || len(a) != 2 || !hasAttr(e, "id", "my-inputId") || !hasAttr(e, "class", "my-inputClass") {
+	if err != nil || e.getName() != "input" || len(a) != 2 || !e.hasAttr("id", "my-inputId") || !e.hasAttr("class", "my-inputClass") {
 		t.Error(r)
 	}
 
@@ -64,9 +64,9 @@ func TestNewElement(t *testing.T) {
 	e, err = newElement(`input.my-inputClass#my-inputId(style="border: 1px solid red;")`)
 	a = e.getAttributes()
 	if err != nil || e.getName() != "input" || len(a) != 3 ||
-		!hasAttr(e, "id", "my-inputId") ||
-		!hasAttr(e, "class", "my-inputClass") ||
-		!hasAttr(e, "style", "border: 1px solid red;") {
+		!e.hasAttr("id", "my-inputId") ||
+		!e.hasAttr("class", "my-inputClass") ||
+		!e.hasAttr("style", "border: 1px solid red;") {
 		t.Error(r)
 	}
 
@@ -77,10 +77,10 @@ func TestNewElement(t *testing.T) {
 	e, err = newElement(`input#my-input(class="#{ $ghost }" type="checkbox" checked)`)
 	a = e.getAttributes()
 	if err != nil || e.getName() != "input" || len(a) != 4 ||
-		!hasAttr(e, "id", "my-input") ||
-		!hasAttr(e, "class", "that you can see") ||
-		!hasAttr(e, "type", "checkbox") ||
-		!hasAttr(e, "checked", "") {
+		!e.hasAttr("id", "my-input") ||
+		!e.hasAttr("class", "that you can see") ||
+		!e.hasAttr("type", "checkbox") ||
+		!e.hasAttr("checked", "") {
 		t.Error(r)
 	}
 
