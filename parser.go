@@ -154,7 +154,7 @@ func (p *parser) parseLines(lines []string) *vaporError {
 		} else if isComment(trim) { // comment
 			v = newComment(raw)
 		} else if isLoop(trim) { // for loop
-			v = newLoopBlock(trim, indent) // TODO: error!
+			v, err = newLoopBlock(trim, indent) // TODO: error!
 		} else if isFilter(trim) { // filter
 			s, err := resolveFilters(trim)
 			if err != nil {

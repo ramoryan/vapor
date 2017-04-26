@@ -43,9 +43,9 @@ func isLoop(s string) bool {
 // TODO:
 // validáció: from > to
 //            to < from
-func newLoopBlock(s string, indent int) *loopBlock {
+func newLoopBlock(s string, indent int) (*loopBlock, *vaporError) {
 	if strings.Index(s, "for ") < 0 {
-		// error
+		return nil, newVaporError(ERR_LOOP, 1, "Loop must be start with 'for'!")
 	}
 
 	s = strings.TrimSpace(strings.TrimLeft(s, "for"))
@@ -53,12 +53,15 @@ func newLoopBlock(s string, indent int) *loopBlock {
 	toStart := strings.Index(s, "to")
 
 	if toStart < 0 {
-		// error
+		return nil, newVaporError(ERR_LOOP, 2, "Loop must contains 'to' keyword!")
 	}
 
 	// from
 	fromStr := strings.TrimSpace(s[:toStart])
-	name, from, _ := parseVariable(fromStr)
+	name, from, err := parseVariable(fromStr)
+	if err != nil {
+		return nil, err
+	}
 
 	l := &loopBlock{block: newBlock(indent)}
 	l.from = strToInt(from, 0)
@@ -76,7 +79,7 @@ func newLoopBlock(s string, indent int) *loopBlock {
 
 	l.varName = name
 
-	return l
+	return l, nil
 }
 
 func isLoopBlockType(v vaporizer) bool {

@@ -13,6 +13,7 @@ const (
 	ERR_FILTER   = 5
 	ERR_VARIABLE = 6
 	ERR_HEAD     = 7
+	ERR_LOOP     = 8
 )
 
 type vaporError struct {
@@ -80,6 +81,8 @@ func getErrorType(n int) string {
 		return "Filter"
 	case ERR_VARIABLE:
 		return "Variable"
+	case ERR_LOOP:
+		return "Loop"
 	}
 
 	return "Unknown"

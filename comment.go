@@ -99,8 +99,11 @@ func newComment(raw string) *comment {
 }
 
 func removeComment(s string) string {
-	if pos := strings.Index(strings.TrimSpace(s), "//"); pos > 0 {
-		return s[:pos]
+	tmp := strings.TrimSpace(s)
+	if pos := strings.Index(tmp, "//"); pos > 0 {
+		if pos-1 < strings.Index(tmp, "://") {
+			return s[:pos]
+		}
 	}
 
 	return s
