@@ -6,6 +6,8 @@ import (
 )
 
 func TestNewComment(t *testing.T) {
+	clearVariables()
+
 	// vapor comment
 	c := newComment("// vapor comment")
 	if c.commentType != C_VAPOR {
@@ -40,5 +42,20 @@ func TestNewComment(t *testing.T) {
 
 	if c.render() != "<!-- native html comment -->\n" {
 		t.Error("Native comment is broken!")
+	}
+
+	// variables
+	name, value, err := parseVariable(removeComment("$my-var = test with // comments"))
+	if err != nil {
+		t.Error(err)
+	}
+
+	if name != "my-var" || value != "test with" {
+		t.Error("Variable parsing with comment is broken!")
+	}
+
+	_, _, err = parseVariable(removeComment("$var = // it should be an error!"))
+	if err == nil {
+		t.Error("Variable parsing without value is not allowed!")
 	}
 }

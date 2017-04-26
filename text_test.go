@@ -21,7 +21,7 @@ func TestNewText(t *testing.T) {
 		t.Error("Text rendering with $ sign is broken!")
 	}
 
-	clearStrStrMap(variables)
+	clearVariables()
 	var err *vaporError
 	txt, err = newText("|     text and #{ $undefined }")
 	if err == nil {

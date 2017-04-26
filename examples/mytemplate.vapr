@@ -20,3 +20,5 @@ html
 		include html/myplainhtml.html
 		include vapr/attr_multiline
 
+		div(id="#{vaporStr}" style="#{vaporInt}px solid red;")
+

@@ -26,7 +26,7 @@ func resolveFilters(s string) (string, *vaporError) {
 			continue // TODO: hack?
 		}
 
-		res, err := resolveFilter(name, getVariableSafe(content))
+		res, err := resolveFilter(name, getVariableSafe(content).(string))
 		if err != nil {
 			return "", err
 		}

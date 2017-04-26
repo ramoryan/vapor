@@ -22,7 +22,8 @@ func (l *loopBlock) render() string {
 		s := l.block.render()
 		res += s
 
-		strValue, _ := getVariable(l.varName)
+		value, _ := getVariable(l.varName)
+		strValue := value.(string)
 		intVal := strToInt(strValue, 0)
 		intVal += 1
 
@@ -72,7 +73,9 @@ func newLoopBlock(s string, indent int) (*loopBlock, *vaporError) {
 	to, found := findVariable(toStr)
 
 	if found {
-		l.to = strToInt(to, 0)
+		str := to.(string)
+
+		l.to = strToInt(str, 0)
 	} else {
 		l.to = strToInt(toStr, 0)
 	}

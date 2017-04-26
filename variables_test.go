@@ -1,6 +1,7 @@
 package vapor
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -70,5 +71,21 @@ func TestParseVariable(t *testing.T) {
 	name, value, err = parseVariable("$argh2 = $anotherUndefined")
 	if err == nil {
 		t.Error("Initializer must returns with undefined variable error!")
+	}
+
+	// --- SLICES
+	AddStrSliceVar("strSlice", []string{"a", "b", "c"})
+	iface, ok := findVariable("strSlice")
+	if !ok {
+		t.Error("strSlice variable not found!")
+	}
+
+	switch reflect.TypeOf(iface).Kind() {
+	case reflect.Slice:
+		// Everything is ok!
+		/*s := reflect.ValueOf(iface)
+		t.Log(s)*/
+	default:
+		t.Error("Variable is not slice of strings!")
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var variables map[string]string
+var variables map[string]interface{}
 
 func isVariableInitializer(s string) bool {
 	if strings.HasPrefix(s, "$") && strings.Index(s, "=") > 0 {
@@ -15,9 +15,9 @@ func isVariableInitializer(s string) bool {
 	return false
 }
 
-func setVariable(name, value string) {
+func setVariable(name string, value interface{}) {
 	if variables == nil {
-		variables = make(map[string]string)
+		variables = make(map[string]interface{})
 	}
 
 	variables[name] = value
@@ -37,7 +37,12 @@ func parseVariable(str string) (name, value string, e *vaporError) {
 	name = strings.TrimSpace(s[:index])
 	value = strings.TrimSpace(s[index+1:])
 
+	if len(value) == 0 {
+		return "", "", newVaporError(ERR_VARIABLE, 5, "You have to define variable value!")
+	}
+
 	var err *vaporError
+
 	value, err = interpolateVariables(value)
 	if err != nil {
 		return "", "", err
@@ -71,7 +76,7 @@ func interpolateVariables(str string) (string, *vaporError) {
 			}
 
 			rest := from[to+1:]
-			res += v + rest
+			res += v.(string) + rest
 		} else {
 			return "", newVaporError(ERR_VARIABLE, 4, "You have to close variable interpoltion!")
 		}
@@ -94,7 +99,7 @@ func resolveVariables(str string) (string, *vaporError) {
 				return "", err
 			}
 
-			res += val
+			res += val.(string)
 			res += s[n:]
 		} else {
 			val, err := getVariable(s)
@@ -102,7 +107,7 @@ func resolveVariables(str string) (string, *vaporError) {
 				return "", err
 			}
 
-			res += val
+			res += val.(string)
 		}
 
 		r, err := resolveVariables(res)
@@ -116,7 +121,7 @@ func resolveVariables(str string) (string, *vaporError) {
 	return str, nil
 }
 
-func getVariable(name string) (string, *vaporError) {
+func getVariable(name string) (interface{}, *vaporError) {
 	value, ok := findVariable(name)
 
 	if !ok {
@@ -126,7 +131,7 @@ func getVariable(name string) (string, *vaporError) {
 	return value, nil
 }
 
-func getVariableSafe(name string) string {
+func getVariableSafe(name string) interface{} {
 	value, ok := findVariable(name)
 
 	if !ok {
@@ -136,7 +141,7 @@ func getVariableSafe(name string) string {
 	return value
 }
 
-func findVariable(name string) (string, bool) {
+func findVariable(name string) (interface{}, bool) {
 	if variables != nil {
 		name = strings.TrimLeft(name, "$")
 
@@ -146,4 +151,10 @@ func findVariable(name string) (string, bool) {
 	}
 
 	return "", false
+}
+
+func clearVariables() {
+	for k := range variables {
+		delete(variables, k)
+	}
 }

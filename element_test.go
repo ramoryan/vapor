@@ -5,7 +5,7 @@ import (
 )
 
 func BenchmarkNewElement(b *testing.B) {
-	clearStrStrMap(variables)
+	clearVariables()
 	setVariable("ghost", "that you can see")
 
 	for i := 0; i < b.N; i++ {
@@ -34,7 +34,7 @@ func TestNewElement(t *testing.T) {
 	// with multiple attrs
 	e, err = newElement(`div(id="my-id" class="my-class")`)
 	if err != nil || e.render() != `<div id="my-id" class="my-class"></div>`+"\n" {
-		t.Error(r)
+		t.Error(err)
 	}
 
 	// --- shortcuts
@@ -83,7 +83,7 @@ func TestNewElement(t *testing.T) {
 	}
 
 	// cuts, attrs, variable interpolation, boolean attr
-	clearStrStrMap(variables)
+	clearVariables()
 	setVariable("ghost", "that you can see")
 
 	e, err = newElement(`input#my-input(class="#{ $ghost }" type="checkbox" checked)`)
