@@ -60,7 +60,8 @@ func (p *parser) parseLines(lines []string) *vaporError {
 		}
 
 		// too much indent
-		if p.last != nil && indent > p.last.getIndent()+8 && !isCommentType(p.last) && !isLoopBlockType(p.last) {
+		if p.last != nil && indent > p.last.getIndent()+8 &&
+			!isCommentType(p.last) && !isForToBlockType(p.last) && !isForInBlockType(p.last) {
 			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
 		}
 
@@ -103,8 +104,17 @@ func (p *parser) parseLines(lines []string) *vaporError {
 		if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
 			(p.last).(*comment).addContent(raw) // cast last one to comment and add this line as content
 			continue
-		} else if p.last != nil && isLoopBlockType(p.last) && indent > p.last.getIndent() {
-			block := (p.last).(*loopBlock)
+		} else if p.last != nil && isForToBlockType(p.last) && indent > p.last.getIndent() { // for to
+			block := (p.last).(*forToBlock)
+
+			if indent > p.last.getIndent() {
+				// collect more rows
+				block.addContent(raw)
+			}
+
+			continue
+		} else if p.last != nil && isForInBlockType(p.last) && indent > p.last.getIndent() { // for in
+			block := (p.last).(*forInBlock)
 
 			if indent > p.last.getIndent() {
 				// collect more rows
@@ -153,8 +163,10 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			v, err = newVoidElement(raw)
 		} else if isComment(trim) { // comment
 			v = newComment(raw)
-		} else if isLoop(trim) { // for loop
-			v, err = newLoopBlock(trim, indent) // TODO: error!
+		} else if isForTo(trim) { // for x to y
+			v, err = newForToBlock(trim, indent) // TODO: error!
+		} else if isForIn(trim) { // for i, v in data
+			v, err = newForInBlock(trim, indent)
 		} else if isFilter(trim) { // filter
 			s, err := resolveFilters(trim)
 			if err != nil {

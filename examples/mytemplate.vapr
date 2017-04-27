@@ -10,6 +10,9 @@ html
 		css css/mycssfile
 		js js/myjsfile
 	body
+		include vapr/for_in
+
+	//
 		include vapr/attr_shortcuts
 		include vapr/for
 	 	include vapr/variables.vapr
