@@ -1,18 +1,9 @@
 !5
 html
-	head
-		title Vapor
-		meta(name="description" content="vapor - golang html template system")
-		link(rel="stylesheet" type="text/css" href='css/index.css')
-		script(src='js/index.js')
-		og:title fittipaldi
-
-		css css/mycssfile
-		js js/myjsfile
+	include vapr/head
 	body
-		include vapr/for_in
+		// include vapr/for_in
 
-	//
 		include vapr/attr_shortcuts
 		include vapr/for
 	 	include vapr/variables.vapr

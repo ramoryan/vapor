@@ -19,16 +19,22 @@ type forInBlock struct {
 func (f *forInBlock) render() string {
 	res := ""
 
-	data, _ := findVariable(f.dataVarName)
-	slice := reflect.ValueOf(data)
+	v, _ := findVariable(f.dataVarName)
 
-	for i := 0; i < slice.Len(); i++ {
-		setVariable(f.iteratorVarName, intToStr(i, ""))
+	// if isIterateable
+	data := reflect.ValueOf(v)
 
-		v := slice.Index(i)
-		val := v.Interface().(string)
-		// setVariable(f.valueVarName, intToStr(slice.Index(i), ""))
-		setVariable(f.valueVarName, val)
+	for i := 0; i < data.Len(); i++ {
+		setVariable(f.iteratorVarName, intToStr(i, "")) // store the iterator actual index
+		v := data.Index(i).Interface()                  // get the value
+
+		if isStr(v) {
+			val := v.(string)
+			setVariable(f.valueVarName, val)
+		} else if isInt(v) {
+			val := v.(int)
+			setVariable(f.valueVarName, intToStr(val, ""))
+		}
 
 		s := f.block.render()
 		res += s

@@ -59,9 +59,11 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			continue
 		}
 
-		// too much indent
+		// too much indent compared the last
 		if p.last != nil && indent > p.last.getIndent()+8 &&
 			!isCommentType(p.last) && !isForToBlockType(p.last) && !isForInBlockType(p.last) {
+			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
+		} else if firstIndent == -1 && indent > 0 {
 			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
 		}
 
@@ -176,8 +178,6 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			v, err = newText(s)
 		} else {
 			v = resolveShortcut(trim)
-
-			// not shortcut
 			if v == nil {
 				v, err = newElement(raw)
 			}

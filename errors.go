@@ -6,14 +6,15 @@ import (
 )
 
 const (
-	ERR_PARSER   = 1
-	ERR_ELEMENT  = 2
-	ERR_ATTR     = 3
-	ERR_INCLUDE  = 4
-	ERR_FILTER   = 5
-	ERR_VARIABLE = 6
-	ERR_HEAD     = 7
-	ERR_LOOP     = 8
+	ERR_PARSER    = 1
+	ERR_ELEMENT   = 2
+	ERR_ATTR      = 3
+	ERR_INCLUDE   = 4
+	ERR_FILTER    = 5
+	ERR_VARIABLE  = 6
+	ERR_HEAD      = 7
+	ERR_LOOP      = 8
+	ERR_SHORTCUTS = 9
 )
 
 type vaporError struct {

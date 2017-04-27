@@ -3,6 +3,7 @@ package vapor
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -71,6 +72,34 @@ func intToStr(i int, def string) string {
 
 func log(f interface{}) {
 	fmt.Println(f)
+}
+
+func typeof(f interface{}) reflect.Kind {
+	return reflect.TypeOf(f).Kind()
+}
+
+func isSlice(f interface{}) bool {
+	return typeof(f) == reflect.Slice
+}
+
+func isStr(f interface{}) bool {
+	return typeof(f) == reflect.String
+}
+
+func isMap(f interface{}) bool {
+	return typeof(f) == reflect.Map
+}
+
+func isInt(f interface{}) bool {
+	return typeof(f) == reflect.Int
+}
+
+func isIterateable(f interface{}) bool {
+	if !isSlice(f) && !isStr(f) && !isMap(f) {
+		return false
+	}
+
+	return true
 }
 
 // Helpers for testing

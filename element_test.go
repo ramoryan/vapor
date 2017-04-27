@@ -34,6 +34,7 @@ func TestNewElement(t *testing.T) {
 	// with multiple attrs
 	e, err = newElement(`div(id="my-id" class="my-class")`)
 	if err != nil || e.render() != `<div id="my-id" class="my-class"></div>`+"\n" {
+		t.Log(e.render())
 		t.Error(err)
 	}
 

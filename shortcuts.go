@@ -18,9 +18,9 @@ func resolveShortcut(s string) vaporizer {
 				value += ".css"
 			}
 
-			e.addAttr("href", value)
-			e.addAttr("rel", "stylesheet")
-			e.addAttr("type", "text/css")
+			e.addAttrQ("href", value)
+			e.addAttrQ("rel", "stylesheet")
+			e.addAttrQ("type", "text/css")
 
 			return e
 		} else if name == "js" {
@@ -31,23 +31,19 @@ func resolveShortcut(s string) vaporizer {
 				value += ".js"
 			}
 
-			e.addAttr("src", value)
+			e.addAttrQ("src", value)
 
 			return e
 		} else if strings.HasPrefix(name, "og:") { // http://ogp.me/
 			m, _ := newMeta("")
-			m.addAttr("property", name)
-			m.addAttr("content", value)
+			m.addAttrQ("property", name)
+			m.addAttrQ("content", value)
 
 			return m
 		} else if name == "keywords" || name == "author" || name == "description" {
 			m, _ := newMeta("")
-			m.addAttr("name", name)
-			m.addAttr("content", value)
-
-			if name == "description" && len(value) > 160 {
-				// error
-			}
+			m.addAttrQ("name", name)
+			m.addAttrQ("content", value)
 
 			return m
 		}

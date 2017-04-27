@@ -40,6 +40,16 @@ func AddStrSliceVar(name string, value []string) *vaporError {
 	return nil
 }
 
+func AddIntSliceVar(name string, value []int) *vaporError {
+	s := make([]interface{}, len(value))
+	for i, v := range value {
+		s[i] = v
+	}
+
+	setVariable(name, s)
+	return nil
+}
+
 /*
 func AddMapVar(name string, value map[string]interface{}) *vaporError {
 
