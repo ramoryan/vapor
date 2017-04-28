@@ -20,7 +20,7 @@ type element struct {
 	needMoreAttrs bool
 }
 
-func (e *element) render() string {
+func (e *element) render() (string, *vaporError) {
 	spc := renderIndent(e.indent)
 
 	s := spc + "<" + e.name
@@ -42,7 +42,12 @@ func (e *element) render() string {
 		}
 
 		for _, child := range e.children {
-			s += child.render()
+			r, err := child.render()
+			if err != nil {
+				return "", err
+			}
+
+			s += r
 		}
 	}
 
@@ -54,7 +59,7 @@ func (e *element) render() string {
 		}
 	}
 
-	return s
+	return s, nil
 }
 
 func (e *element) getIndent() int {

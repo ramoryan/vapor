@@ -10,7 +10,7 @@ func TestNewMeta(t *testing.T) {
 		t.Error(err)
 	}
 
-	if m.render() != "<meta>\n" {
+	if r, err := m.render(); r != "<meta>\n" || err != nil {
 		t.Error("Meta render has been broken!")
 	}
 }

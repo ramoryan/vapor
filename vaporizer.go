@@ -2,7 +2,7 @@
 package vapor
 
 type vaporizer interface {
-	render() string
+	render() (string, *vaporError)
 	getIndent() int
 	getParent() vaporizer
 	setParent(v vaporizer)

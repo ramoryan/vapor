@@ -18,9 +18,9 @@ type comment struct {
 	commentType int
 }
 
-func (c *comment) render() string {
+func (c *comment) render() (string, *vaporError) {
 	if c.commentType == C_VAPOR {
-		return ""
+		return "", nil
 	}
 
 	spc := renderIndent(c.indent + 8)
@@ -46,7 +46,7 @@ func (c *comment) render() string {
 		s += " -->"
 	}
 
-	return s + "\n"
+	return s + "\n", nil
 }
 
 func getCommentType(s string) int {

@@ -14,7 +14,8 @@ func TestNewVoidElement(t *testing.T) {
 			t.Error(err)
 		}
 
-		s := strings.Replace(v.render(), "\n", "", -1)
+		r, _ := v.render()
+		s := strings.Replace(r, "\n", "", -1)
 
 		if s != "<"+name+">" {
 			t.Error(e)

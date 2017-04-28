@@ -10,7 +10,7 @@ func TestNewDoctype(t *testing.T) {
 		t.Error(err)
 	}
 
-	if d.render() != "<!DOCTYPE html>\n" {
+	if r, err := d.render(); r != "<!DOCTYPE html>\n" || err != nil {
 		t.Error("Doctype has been broken!")
 	}
 }

@@ -64,7 +64,7 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			!isCommentType(p.last) && !isForToBlockType(p.last) && !isForInBlockType(p.last) {
 			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
 		} else if firstIndent == -1 && indent > 0 {
-			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
+			//return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
 		}
 
 		// new variable
@@ -213,7 +213,12 @@ func (p *parser) parseLines(lines []string) *vaporError {
 	}
 
 	for _, el := range p.tree {
-		p.output += el.render()
+		out, err := el.render()
+		if err != nil {
+			return p.extendErr(err)
+		}
+
+		p.output += out
 	}
 
 	return nil

@@ -16,10 +16,13 @@ type forInBlock struct {
 	value           interface{} // anything
 }
 
-func (f *forInBlock) render() string {
+func (f *forInBlock) render() (string, *vaporError) {
 	res := ""
 
-	v, _ := findVariable(f.dataVarName)
+	v, err := getVariable(f.dataVarName) // findVariable(f.dataVarName)
+	if err != nil {
+		return "", err
+	}
 
 	// if isIterateable
 	data := reflect.ValueOf(v)
@@ -36,11 +39,15 @@ func (f *forInBlock) render() string {
 			setVariable(f.valueVarName, intToStr(val, ""))
 		}
 
-		s := f.block.render()
+		s, err := f.block.render()
+		if err != nil {
+			return "", err
+		}
+
 		res += s
 	}
 
-	return res
+	return res, nil
 }
 
 func isForIn(s string) bool {
@@ -80,14 +87,22 @@ type forToBlock struct {
 	to      int
 }
 
-func (f *forToBlock) render() string {
+func (f *forToBlock) render() (string, *vaporError) {
 	res := ""
 
 	for i := f.from; i <= f.to; i++ {
-		s := f.block.render()
+		s, err := f.block.render()
+		if err != nil {
+			return "", err
+		}
+
 		res += s
 
-		value, _ := getVariable(f.varName)
+		value, varErr := getVariable(f.varName)
+		if varErr != nil {
+			return "", varErr
+		}
+
 		strValue := value.(string)
 		intVal := strToInt(strValue, 0)
 		intVal += 1
@@ -95,7 +110,7 @@ func (f *forToBlock) render() string {
 		setVariable(f.varName, intToStr(intVal, ""))
 	}
 
-	return res
+	return res, nil
 }
 
 func isForTo(s string) bool {

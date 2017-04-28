@@ -10,8 +10,8 @@ type text struct {
 	*element
 }
 
-func (t *text) render() string {
-	return renderIndent(t.indent) + t.inlineText + "\n"
+func (t *text) render() (string, *vaporError) {
+	return renderIndent(t.indent) + t.inlineText + "\n", nil
 }
 
 func newText(raw string) (*text, *vaporError) {

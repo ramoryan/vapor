@@ -10,7 +10,7 @@ type htmlContent struct {
 	*element
 }
 
-func (h *htmlContent) render() (res string) {
+func (h *htmlContent) render() (res string, err *vaporError) {
 	indent := renderIndent(h.indent)
 	lines := strings.Split(h.inlineText, "\n")
 
@@ -18,7 +18,7 @@ func (h *htmlContent) render() (res string) {
 		res += indent + s + "\n"
 	}
 
-	return res
+	return res, nil
 }
 
 func newHtmlContent(s string) *htmlContent {

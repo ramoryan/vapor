@@ -14,7 +14,7 @@ func TestNewComment(t *testing.T) {
 		t.Error("It must be a vapor comment!")
 	}
 
-	if c.render() != "" {
+	if r, err := c.render(); r != "" || err != nil {
 		t.Error("Rendering vapor comment must returns empty string!")
 	}
 
@@ -24,13 +24,15 @@ func TestNewComment(t *testing.T) {
 		t.Error("It must be a 'to native' comment!")
 	}
 
-	if c.render() != "<!-- it'd be native -->\n" {
+	if r, err := c.render(); r != "<!-- it'd be native -->\n" || err != nil {
 		t.Error("To native comment rendering is broken!")
 	}
 
 	c.addContent("hold me too!")
 
-	if removeMultipleSpaces(strings.Replace(c.render(), "\n", "", -1)) != "<!-- it'd be nativehold me too! -->" {
+	r, err := c.render()
+	if err != nil ||
+		removeMultipleSpaces(strings.Replace(r, "\n", "", -1)) != "<!-- it'd be nativehold me too! -->" {
 		t.Error("Multiline native comment is broken!")
 	}
 
@@ -40,7 +42,7 @@ func TestNewComment(t *testing.T) {
 		t.Error("It must be a native comment!")
 	}
 
-	if c.render() != "<!-- native html comment -->\n" {
+	if r, err := c.render(); r != "<!-- native html comment -->\n" || err != nil {
 		t.Error("Native comment is broken!")
 	}
 

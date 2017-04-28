@@ -1,18 +1,18 @@
 !5
 html
-	include vapr/head
+	// include vapr/head
 	body
+		// include vapr/for
 		// include vapr/for_in
 
-		include vapr/attr_shortcuts
-		include vapr/for
-	 	include vapr/variables.vapr
-		include vapr/text.vapr
-		include vapr/filter
-		include vapr/attributes
-		include vapr/comment
-		include html/myplainhtml.html
-		include vapr/attr_multiline
+			include vapr/attr_shortcuts
+		 	include vapr/variables.vapr
+			include vapr/text.vapr
+			include vapr/filter
+			include vapr/attributes
+			include vapr/comment
+			include html/myplainhtml.html
+			include vapr/attr_multiline
 
-		div(id="#{vaporStr}" style="#{vaporInt}px solid red;")
+			div(id="#{vaporStr}" style="#{vaporInt}px solid red;")
 

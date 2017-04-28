@@ -21,34 +21,52 @@ func TestNewElement(t *testing.T) {
 
 	// simple
 	e, err := newElement("div")
-	if err != nil || e.render() != "<div></div>\n" {
+	if err != nil {
+		t.Error(r)
+	}
+	if s, err := e.render(); s != "<div></div>\n" || err != nil {
 		t.Error(r)
 	}
 
 	// with one attr
 	e, err = newElement(`div(id="my-id")`)
-	if err != nil || e.render() != `<div id="my-id"></div>`+"\n" {
+	if err != nil {
+		t.Error(r)
+	}
+
+	if ren, err := e.render(); ren != `<div id="my-id"></div>`+"\n" || err != nil {
 		t.Error(r)
 	}
 
 	// with multiple attrs
 	e, err = newElement(`div(id="my-id" class="my-class")`)
-	if err != nil || e.render() != `<div id="my-id" class="my-class"></div>`+"\n" {
-		t.Log(e.render())
+	if err != nil {
 		t.Error(err)
+	}
+
+	if ren, err := e.render(); ren != `<div id="my-id" class="my-class"></div>`+"\n" || err != nil {
+		t.Error(r)
 	}
 
 	// --- shortcuts
 
 	// #
 	e, err = newElement("#my-id")
-	if err != nil || e.render() != `<div id="my-id"></div>`+"\n" {
+	if err != nil {
+		t.Error(r)
+	}
+
+	if ren, err := e.render(); ren != `<div id="my-id"></div>`+"\n" || err != nil {
 		t.Error(r)
 	}
 
 	// .
 	e, err = newElement(".my-class")
-	if err != nil || e.render() != `<div class="my-class"></div>`+"\n" {
+	if err != nil {
+		t.Error(r)
+	}
+
+	if ren, err := e.render(); ren != `<div class="my-class"></div>`+"\n" || err != nil {
 		t.Error(r)
 	}
 
