@@ -38,7 +38,12 @@ func (e *element) render() (string, *vaporError) {
 		s += "\n"
 
 		if hasText {
-			s += renderIndent(e.indent+8) + e.inlineText + "\n"
+			inlineText, err := interpolateVariables(e.inlineText)
+			if err != nil {
+				return "", err
+			}
+
+			s += renderIndent(e.indent+8) + inlineText + "\n"
 		}
 
 		for _, child := range e.children {

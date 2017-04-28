@@ -19,37 +19,60 @@ type forInBlock struct {
 func (f *forInBlock) render() (string, *vaporError) {
 	res := ""
 
-	v, err := getVariable(f.dataVarName) // findVariable(f.dataVarName)
+	// get the data by varName
+	v, err := getVariable(f.dataVarName)
 	if err != nil {
 		return "", err
 	}
 
-	// if isIterateable
-	data := reflect.ValueOf(v)
+	// is Map, Slice or String?
+	if !isIterateable(v) {
+		return "", newVaporError(ERR_LOOP, 5, "Data must be Map, Slice or String!")
+	}
 
-	for i := 0; i < data.Len(); i++ {
-		setVariable(f.iteratorVarName, intToStr(i, "")) // store the iterator actual index
-		v := data.Index(i).Interface()                  // get the value
+	// string
+	if isStr(v) {
+		for index, value := range v.(string) {
+			setVariable(f.iteratorVarName, intToStr(index, "")) // store the iterator actual index
+			setVariable(f.valueVarName, string(value))
 
-		if isStr(v) {
-			val := v.(string)
-			setVariable(f.valueVarName, val)
-		} else if isInt(v) {
-			val := v.(int)
-			setVariable(f.valueVarName, intToStr(val, ""))
+			s, err := f.block.render()
+			if err != nil {
+				return "", err
+			}
+
+			res += s
 		}
+	} else { // slice
+		data := reflect.ValueOf(v)
 
-		s, err := f.block.render()
-		if err != nil {
-			return "", err
+		for i := 0; i < data.Len(); i++ {
+			setVariable(f.iteratorVarName, intToStr(i, "")) // store the iterator actual index
+			v := data.Index(i).Interface()                  // get the value
+
+			if isStr(v) {
+				val := v.(string)
+				setVariable(f.valueVarName, val)
+			} else if isInt(v) {
+				val := v.(int)
+				setVariable(f.valueVarName, intToStr(val, ""))
+			} else {
+				return "", newVaporError(ERR_LOOP, 6, "Not applicable type! "+typeof(v).String())
+			}
+
+			s, err := f.block.render()
+			if err != nil {
+				return "", err
+			}
+
+			res += s
 		}
-
-		res += s
 	}
 
 	return res, nil
 }
 
+// returns it's a "for in" loop or not
 func isForIn(s string) bool {
 	if strings.HasPrefix(s, "for ") && strings.Index(s, " in ") > 0 {
 		return true
@@ -59,23 +82,53 @@ func isForIn(s string) bool {
 }
 
 func newForInBlock(s string, indent int) (*forInBlock, *vaporError) {
-	if strings.Index(s, "for ") < 0 {
+	if !strings.HasPrefix(s, "for ") {
 		return nil, newVaporError(ERR_LOOP, 1, "Loop must be start with 'for'!")
 	}
 
-	s = strings.TrimSpace(strings.TrimLeft(s, "for"))
+	s = strings.TrimSpace(strings.TrimLeft(s, "for")) // the string without "for"
 
 	toStart := strings.Index(s, "in")
 	if toStart < 0 {
 		return nil, newVaporError(ERR_LOOP, 2, "Loop must contains 'in' keyword!")
 	}
 
+	// collect the "key" and "value" initializers
+	varsStr := strings.TrimSpace(s[:toStart])
+	if len(varsStr) <= 0 {
+		return nil, newVaporError(ERR_LOOP, 3, "Loop must contains 'key' and 'value' initializers!")
+	}
+
+	//vars := strings.Split(varsStr, ",")
+	vars := splitAndTrim(varsStr, ",")
+	if len(vars) != 2 {
+		return nil, newVaporError(ERR_LOOP, 3, "Loop must contains 'key' and 'value' initializers!")
+	}
+
+	if !strings.HasPrefix(vars[0], "$") || !strings.HasPrefix(vars[1], "$") {
+		return nil, newVaporError(ERR_LOOP, 4, "Not valid variable initializers! Use the $ sign!")
+	}
+
+	// collect the "data" variable
+	dataVar := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(s[toStart:]), "in"))
+
+	_, err := getVariable(dataVar)
+	if err != nil {
+		return nil, err
+	}
+
 	f := &forInBlock{block: newBlock(indent)}
-	f.iteratorVarName = "i"
-	f.valueVarName = "v"
-	f.dataVarName = "vaporSlice"
+	f.iteratorVarName = strings.TrimLeft(vars[0], "$")
+	f.valueVarName = strings.TrimLeft(vars[1], "$")
+	f.dataVarName = dataVar
 
 	return f, nil
+}
+
+func isForInBlockType(v vaporizer) bool {
+	t := reflect.TypeOf(v).String()
+
+	return (t == "*vapor.forInBlock")
 }
 
 // ---- FOR x TO Y
@@ -119,12 +172,6 @@ func isForTo(s string) bool {
 	}
 
 	return false
-}
-
-func isForInBlockType(v vaporizer) bool {
-	t := reflect.TypeOf(v).String()
-
-	return (t == "*vapor.forInBlock")
 }
 
 // TODO:

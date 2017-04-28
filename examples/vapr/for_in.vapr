@@ -1,3 +1,22 @@
 //
-	for $i, $v in $vaporSlice
+	for $i, $v in $vaporMainStr
 		| #{$i} #{$v}
+
+	for $i, $v in $vaporIntSlice
+		| #{$i} #{$v}
+
+	for $i, $v in $vaporStrSlice
+		| #{$i} #{$v}
+
+
+for $index = 0 to 5
+	div Beszarás: #{$index}
+
+	for $i, $v in $vaporMainStr // "abcdefgh"
+		for $j, $k in $vaporIntSlice // [ 956, 1848, 1956 ]
+			for $l, $m in $vaporStrSlice // [ "aaa", "bbb", "ccc" ]
+				div
+					| vaporMainStr: i: #{$i}, v: #{$v}
+					| vaporIntSlice: j: #{$j}, k: #{$k}
+					| vaporStrSlice: l: #{$l}, m: #{$m}
+

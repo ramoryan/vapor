@@ -102,6 +102,23 @@ func isIterateable(f interface{}) bool {
 	return true
 }
 
+// https://gobyexample.com/collection-functions
+func sliceMap(vs []string, f func(string) string) []string {
+	vsm := make([]string, len(vs))
+	for i, v := range vs {
+		vsm[i] = f(v)
+	}
+	return vsm
+}
+
+func splitAndTrim(s, sep string) []string {
+	split := strings.Split(s, sep)
+	if len(split) > 0 {
+		split = sliceMap(split, strings.TrimSpace)
+	}
+	return split
+}
+
 // Helpers for testing
 
 func removeMultipleSpaces(s string) string {

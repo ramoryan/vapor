@@ -11,11 +11,14 @@ func main() {
 	vapor.AddStrVar("vaporStr", "karamel")
 	vapor.AddIntVar("vaporInt", 956)
 
-	/*strSlice := []string{"a", "b", "c"}
-	vapor.AddStrSliceVar("vaporSlice", strSlice)*/
+	str := "abcdefgh"
+	vapor.AddStrVar("vaporMainStr", str)
 
-	intSlice := []int{956, 1845, 1956}
-	vapor.AddIntSliceVar("vaporSlice", intSlice)
+	strSlice := []string{"aaa", "bbb", "ccc"}
+	vapor.AddStrSliceVar("vaporStrSlice", strSlice)
+
+	intSlice := []int{956, 1848, 1956}
+	vapor.AddIntSliceVar("vaporIntSlice", intSlice)
 
 	out, err := vapor.ParseFile("./mytemplate.vapr")
 

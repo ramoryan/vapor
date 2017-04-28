@@ -4,6 +4,7 @@ package vapor
 import (
 	"bufio"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -18,26 +19,37 @@ type parser struct {
 }
 
 func (p *parser) parseFile(fileName string) *vaporError {
+	// Check file extension, only .vapr or .html is allowed.
+	ext := path.Ext(fileName)
+	if ext != ".vapr" && ext != ".html" {
+		return newVaporError(ERR_PARSER, 1, "File extension must be .vapr or .html! "+fileName+" given.")
+	}
+
+	// Try to open a file
 	p.fileName = fileName
 	file, err := os.Open(fileName)
-
 	if err != nil {
-		return newVaporError(ERR_PARSER, 1, "Cannot open "+fileName)
+		return newVaporError(ERR_PARSER, 2, "Cannot open "+fileName)
 	}
 
 	defer file.Close()
 
+	// Collect the lines.
 	lines := make([]string, 0)
-
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
 
+	// Returns vaporError or nil.
 	return p.parseLines(lines)
 }
 
+// Extends the vaporError with the most important datas:
+// - actual line
+// - filename
+// - actual line number
 func (p *parser) extendErr(err *vaporError) *vaporError {
 	return err.addErrorLine(p.actLine).addFileName(p.fileName).addErrLineNum(p.actLineNum)
 }

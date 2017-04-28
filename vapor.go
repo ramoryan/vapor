@@ -5,6 +5,7 @@ import (
 	"errors"
 )
 
+// You can parse a vapor file and gets back the output string or a vaporError
 func ParseFile(fileName string) (string, error) {
 	p := newParser()
 	err := p.parseFile(fileName)
