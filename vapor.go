@@ -51,8 +51,7 @@ func AddIntSliceVar(name string, value []int) *vaporError {
 	return nil
 }
 
-/*
 func AddMapVar(name string, value map[string]interface{}) *vaporError {
-
+	setVariable(name, value)
+	return nil
 }
-*/

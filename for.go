@@ -43,6 +43,29 @@ func (f *forInBlock) render() (string, *vaporError) {
 
 			res += s
 		}
+	} else if isMap(v) {
+		data := reflect.ValueOf(v)
+
+		for _, key := range data.MapKeys() {
+			setVariable(f.iteratorVarName, key.String())
+
+			value := data.MapIndex(key).Interface() // get the value
+
+			if isStr(value) {
+				v := value.(string)
+				setVariable(f.valueVarName, v)
+			} else if isInt(value) {
+				v := value.(int)
+				setVariable(f.valueVarName, intToStr(v, ""))
+			}
+
+			s, err := f.block.render()
+			if err != nil {
+				return "", err
+			}
+
+			res += s
+		}
 	} else { // slice
 		data := reflect.ValueOf(v)
 

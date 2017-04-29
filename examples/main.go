@@ -20,6 +20,9 @@ func main() {
 	intSlice := []int{956, 1848, 1956}
 	vapor.AddIntSliceVar("vaporIntSlice", intSlice)
 
+	vaporMap := map[string]interface{}{"Béla": 1, "Géza": 2, "Kálmán": 3}
+	vapor.AddMapVar("vaporMap", vaporMap)
+
 	out, err := vapor.ParseFile("./mytemplate.vapr")
 
 	if err != nil {
