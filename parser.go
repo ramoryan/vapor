@@ -8,12 +8,14 @@ import (
 	"strings"
 )
 
+type vaporTree []vaporizer
+
 type parser struct {
 	actLine    string
 	actLineNum int
 	parent     vaporizer
 	last       vaporizer
-	tree       []vaporizer
+	tree       vaporTree
 	fileName   string
 	output     string
 }
@@ -140,13 +142,13 @@ func (p *parser) parseLines(lines []string) *vaporError {
 
 		// include html or vapor file
 		if isInclude(trim) {
-			inc, err := include(trim)
+			tree, err := include(trim)
 			if err != nil {
 				return p.extendErr(err)
 			}
 
 			if p.last != nil && p.last.getIndent() < indent {
-				p.last.addChild(inc)
+				p.last.appendTree(tree)
 			} else {
 				par := p.parent
 
@@ -154,7 +156,7 @@ func (p *parser) parseLines(lines []string) *vaporError {
 					par = par.getParent()
 				}
 
-				par.addChild(inc)
+				par.appendTree(tree)
 			}
 
 			continue

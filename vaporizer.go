@@ -15,4 +15,6 @@ type vaporizer interface {
 	needMultilineAttrs() bool
 	closeMultilineAttrs()
 	hasAttr(attrName, attrValue string) bool
+	appendTree(t vaporTree)
+	reIndent()
 }

@@ -14,7 +14,7 @@ func TestInclude(t *testing.T) {
 
 	// valid html file
 	c, err = include("./examples/html/myplainhtml.html")
-	if c == nil || err != nil || len(c.inlineText) <= 0 {
+	if c == nil || err != nil || len(c) <= 0 {
 		t.Error(err)
 	}
 

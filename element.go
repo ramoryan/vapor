@@ -71,6 +71,20 @@ func (e *element) getIndent() int {
 	return e.indent
 }
 
+func (e *element) appendTree(t vaporTree) {
+	for i := 0; i < len(t); i++ {
+		e.addChild(t[i])
+		e.reIndent()
+	}
+}
+
+func (e *element) reIndent() {
+	for _, child := range e.children {
+		child.setIndent(e.indent + 8)
+		child.reIndent()
+	}
+}
+
 func (e *element) setParent(v vaporizer) {
 	e.parent = v
 }

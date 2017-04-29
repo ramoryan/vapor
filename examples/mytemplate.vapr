@@ -1,12 +1,13 @@
 !5
 html
-	include vapr/head
+	include html/myplainhtml.html
+	//include vapr/head
 	body
+		include vapr/attr_shortcuts
 		// include vapr/for_in
 
 		// include vapr/for
-
-		include vapr/attr_shortcuts
+	//
 	 	include vapr/variables.vapr
 		include vapr/text.vapr
 		include vapr/filter

@@ -31,7 +31,7 @@ func isInclude(str string) bool {
 	return strings.HasPrefix(str, "include")
 }
 
-func include(str string) (*htmlContent, *vaporError) {
+func include(str string) (vaporTree, *vaporError) {
 	path := strings.TrimSpace(strings.TrimPrefix(str, "include"))
 
 	if strings.HasSuffix(path, ".html") {
@@ -41,7 +41,9 @@ func include(str string) (*htmlContent, *vaporError) {
 		}
 
 		h := newHtmlContent(string(b))
-		return h, nil
+		tree := vaporTree{h}
+
+		return tree, nil
 	} else {
 		if !strings.HasSuffix(path, ".vapr") {
 			path += ".vapr"
@@ -49,13 +51,11 @@ func include(str string) (*htmlContent, *vaporError) {
 
 		p := newParser()
 		err := p.parseFile(path)
-
 		if err != nil {
 			return nil, err
 		}
 
-		h := newHtmlContent(p.output)
-		return h, nil
+		return p.tree, nil
 	}
 
 	return nil, nil
