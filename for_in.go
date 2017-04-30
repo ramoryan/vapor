@@ -16,18 +16,6 @@ type forInBlock struct {
 	value           interface{} // anything
 }
 
-func (f *forInBlock) addChild(v vaporizer) *vaporError {
-	f.parent.addChild(v)
-	return nil
-}
-
-func (f *forInBlock) reIndent() {
-	for _, child := range f.children {
-		child.setIndent(f.indent)
-		child.reIndent()
-	}
-}
-
 func (f *forInBlock) parse() (vaporTree, *vaporError) {
 	// get the data by varName
 	v, err := getVariable(f.dataVarName)

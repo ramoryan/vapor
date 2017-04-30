@@ -3,11 +3,11 @@ html
 	// include vapr/head
 	body
 		include vapr/for_in
+		include vapr/for
 
 	//
 		include html/myplainhtml.html
 
-		include vapr/for
 		include vapr/attr_shortcuts
 	 	include vapr/variables.vapr
 		include vapr/text.vapr

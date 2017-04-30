@@ -15,18 +15,6 @@ type forToBlock struct {
 	to      int
 }
 
-func (f *forToBlock) addChild(v vaporizer) *vaporError {
-	f.parent.addChild(v)
-	return nil
-}
-
-func (f *forToBlock) reIndent() {
-	for _, child := range f.children {
-		child.setIndent(f.indent)
-		child.reIndent()
-	}
-}
-
 func (f *forToBlock) parse() (vaporTree, *vaporError) {
 	for i := f.from; i <= f.to; i++ {
 		tree, err := f.block.parse()

@@ -10,13 +10,25 @@ type block struct {
 	content []string
 }
 
-func (c *block) addContent(s string) {
-	c.content = append(c.content, s)
+func (b *forInBlock) addChild(v vaporizer) *vaporError {
+	b.parent.addChild(v)
+	return nil
 }
 
-func (c *block) parse() (vaporTree, *vaporError) {
+func (b *block) reIndent() {
+	for _, child := range b.children {
+		child.setIndent(b.indent)
+		child.reIndent()
+	}
+}
+
+func (b *block) addContent(s string) {
+	b.content = append(b.content, s)
+}
+
+func (b *block) parse() (vaporTree, *vaporError) {
 	p := newParser()
-	err := p.parseLines(c.content)
+	err := p.parseLines(b.content)
 	if err != nil {
 		return nil, err
 	}
