@@ -17,4 +17,5 @@ type vaporizer interface {
 	hasAttr(attrName, attrValue string) bool
 	appendTree(t vaporTree)
 	reIndent()
+	parse() (vaporTree, *vaporError)
 }

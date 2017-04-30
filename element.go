@@ -21,21 +21,28 @@ type element struct {
 }
 
 func (e *element) render() (string, *vaporError) {
+	renderCount++
+
+	s := ""
 	spc := renderIndent(e.indent)
 
-	s := spc + "<" + e.name
+	if len(e.name) > 0 {
+		s = spc + "<" + e.name
 
-	for _, attr := range e.attributes {
-		s += " " + attr.render()
+		for _, attr := range e.attributes {
+			s += " " + attr.render()
+		}
+
+		s += ">"
 	}
-
-	s += ">"
 
 	hasText := len(e.inlineText) > 0
 	hasChildren := len(e.children) > 0
 
 	if hasText || hasChildren || e.isVoid {
-		s += "\n"
+		if len(s) > 0 {
+			s += "\n"
+		}
 
 		if hasText {
 			inlineText, err := interpolateVariables(e.inlineText)
@@ -56,11 +63,13 @@ func (e *element) render() (string, *vaporError) {
 		}
 	}
 
-	if !e.isVoid {
-		if hasText || hasChildren {
-			s += spc + "</" + e.name + ">\n"
-		} else {
-			s += "</" + e.name + ">\n"
+	if len(e.name) > 0 {
+		if !e.isVoid {
+			if hasText || hasChildren {
+				s += spc + "</" + e.name + ">\n"
+			} else {
+				s += "</" + e.name + ">\n"
+			}
 		}
 	}
 
@@ -76,6 +85,22 @@ func (e *element) appendTree(t vaporTree) {
 		e.addChild(t[i])
 		e.reIndent()
 	}
+}
+
+// Implement it to be a valid vaporizer.
+func (e *element) parse() (vaporTree, *vaporError) {
+	for _, child := range e.children {
+		tree, err := child.parse()
+		if err != nil {
+			return nil, err
+		}
+
+		if tree != nil {
+			return tree, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (e *element) reIndent() {

@@ -10,6 +10,8 @@ import (
 
 type vaporTree []vaporizer
 
+var renderCount int
+
 type parser struct {
 	actLine    string
 	actLineNum int
@@ -75,7 +77,7 @@ func (p *parser) parseLines(lines []string) *vaporError {
 
 		// too much indent compared the last
 		if p.last != nil && indent > p.last.getIndent()+8 &&
-			!isCommentType(p.last) && !isForToBlockType(p.last) && !isForInBlockType(p.last) {
+			!isCommentType(p.last) && !isForToBlockType(p.last) /*&& !isForInBlockType(p.last)*/ {
 			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
 		} else if firstIndent == -1 && indent > 0 {
 			//return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
@@ -120,16 +122,17 @@ func (p *parser) parseLines(lines []string) *vaporError {
 		if p.last != nil && isCommentType(p.last) && indent >= p.last.getIndent()+8 {
 			(p.last).(*comment).addContent(raw) // cast last one to comment and add this line as content
 			continue
-		} else if p.last != nil && isForToBlockType(p.last) && indent > p.last.getIndent() { // for to
+			// loop
+			// --- for to
+		} else if p.last != nil && isForToBlockType(p.last) && indent > p.last.getIndent() {
 			block := (p.last).(*forToBlock)
 
-			if indent > p.last.getIndent() {
-				// collect more rows
-				block.addContent(raw)
-			}
+			// collect more rows
+			block.addContent(raw)
 
 			continue
-		} else if p.last != nil && isForInBlockType(p.last) && indent > p.last.getIndent() { // for in
+			// --- for in
+		} /*else if p.last != nil && isForInBlockType(p.last) && indent > p.last.getIndent() {
 			block := (p.last).(*forInBlock)
 
 			if indent > p.last.getIndent() {
@@ -138,7 +141,7 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			}
 
 			continue
-		}
+		}*/
 
 		// include html or vapor file
 		if isInclude(trim) {
@@ -181,8 +184,8 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			v = newComment(raw)
 		} else if isForTo(trim) { // for x to y
 			v, err = newForToBlock(trim, indent) // TODO: error!
-		} else if isForIn(trim) { // for i, v in data
-			v, err = newForInBlock(trim, indent)
+			/*} else if isForIn(trim) { // for i, v in data
+			v, err = newForInBlock(trim, indent)*/
 		} else if isFilter(trim) { // filter
 			s, err := resolveFilters(trim)
 			if err != nil {
@@ -227,6 +230,14 @@ func (p *parser) parseLines(lines []string) *vaporError {
 	}
 
 	for _, el := range p.tree {
+		_, err := el.parse()
+		if err != nil {
+			return p.extendErr(err)
+		}
+	}
+
+	for _, el := range p.tree {
+		el.reIndent()
 		out, err := el.render()
 		if err != nil {
 			return p.extendErr(err)

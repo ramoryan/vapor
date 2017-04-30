@@ -14,14 +14,14 @@ func (c *block) addContent(s string) {
 	c.content = append(c.content, s)
 }
 
-func (c *block) render() (string, *vaporError) {
+func (c *block) parse() (vaporTree, *vaporError) {
 	p := newParser()
 	err := p.parseLines(c.content)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return p.output, nil
+	return p.tree, nil
 }
 
 func newBlock(indent int) *block {

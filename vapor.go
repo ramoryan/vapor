@@ -3,16 +3,24 @@ package vapor
 
 import (
 	"errors"
+	"fmt"
+	"time"
 )
 
 // You can parse a vapor file and gets back the output string or a vaporError
 func ParseFile(fileName string) (string, error) {
+	start := time.Now()
+
 	p := newParser()
 	err := p.parseFile(fileName)
 
 	if err != nil {
 		return "", errors.New(err.String())
 	}
+
+	elapsed := time.Since(start)
+	fmt.Printf("Running time: %s\n", elapsed)
+	fmt.Println("Rendered vapor elem: " + intToStr(renderCount, ""))
 
 	return p.output, nil
 }
