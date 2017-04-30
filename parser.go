@@ -77,10 +77,10 @@ func (p *parser) parseLines(lines []string) *vaporError {
 
 		// too much indent compared the last
 		if p.last != nil && indent > p.last.getIndent()+8 &&
-			!isCommentType(p.last) && !isForToBlockType(p.last) /*&& !isForInBlockType(p.last)*/ {
+			!isCommentType(p.last) && !isForToBlockType(p.last) && !isForInBlockType(p.last) {
 			return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
 		} else if firstIndent == -1 && indent > 0 {
-			//return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
+			// return p.extendErr(newVaporError(ERR_PARSER, 3, "Too much indentation!"))
 		}
 
 		// new variable
@@ -132,16 +132,14 @@ func (p *parser) parseLines(lines []string) *vaporError {
 
 			continue
 			// --- for in
-		} /*else if p.last != nil && isForInBlockType(p.last) && indent > p.last.getIndent() {
+		} else if p.last != nil && isForInBlockType(p.last) && indent > p.last.getIndent() {
 			block := (p.last).(*forInBlock)
 
-			if indent > p.last.getIndent() {
-				// collect more rows
-				block.addContent(raw)
-			}
+			// collect more rows
+			block.addContent(raw)
 
 			continue
-		}*/
+		}
 
 		// include html or vapor file
 		if isInclude(trim) {
@@ -184,8 +182,8 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			v = newComment(raw)
 		} else if isForTo(trim) { // for x to y
 			v, err = newForToBlock(trim, indent) // TODO: error!
-			/*} else if isForIn(trim) { // for i, v in data
-			v, err = newForInBlock(trim, indent)*/
+		} else if isForIn(trim) { // for i, v in data
+			v, err = newForInBlock(trim, indent)
 		} else if isFilter(trim) { // filter
 			s, err := resolveFilters(trim)
 			if err != nil {
