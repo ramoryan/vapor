@@ -139,7 +139,9 @@ func (p *parser) parseLines(lines []string) *vaporError {
 			block.addContent(raw)
 
 			continue
-		}
+		} /*else if p.last != nil && isMixinType(p.last) && indent > p.last.getIndent() {
+			block := (p.last).(*mixin)
+		}*/
 
 		// include html or vapor file
 		if isInclude(trim) {
@@ -148,7 +150,10 @@ func (p *parser) parseLines(lines []string) *vaporError {
 				return p.extendErr(err)
 			}
 
-			if p.last != nil && p.last.getIndent() < indent {
+			// success file include
+
+			// include was not the first in this file
+			if p.last != nil && p.last.getIndent() < indent { // ends of the including things
 				p.last.appendTree(tree)
 			} else {
 				par := p.parent
@@ -157,7 +162,13 @@ func (p *parser) parseLines(lines []string) *vaporError {
 					par = par.getParent()
 				}
 
-				par.appendTree(tree)
+				if par != nil {
+					par.appendTree(tree)
+				} else {
+					p.tree = tree
+					p.last = tree[len(tree)-1]
+					p.parent = p.last
+				}
 			}
 
 			continue

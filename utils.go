@@ -2,6 +2,7 @@
 package vapor
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -100,6 +101,25 @@ func isIterateable(f interface{}) bool {
 	}
 
 	return true
+}
+
+func getKeys(v interface{}) ([]string, error) {
+	rv := reflect.ValueOf(v)
+	if rv.Kind() != reflect.Map {
+		return nil, errors.New("not a map")
+	}
+
+	t := rv.Type()
+	if t.Key().Kind() != reflect.String {
+		return nil, errors.New("not string key")
+	}
+
+	var result []string
+	for _, kv := range rv.MapKeys() {
+		result = append(result, kv.String())
+	}
+
+	return result, nil
 }
 
 // https://gobyexample.com/collection-functions

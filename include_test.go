@@ -39,6 +39,19 @@ func TestInclude(t *testing.T) {
 		t.Error("Vapor examples are not found!")
 	}
 
+	clearVariables()
+	str := "abcdefgh"
+	AddStrVar("vaporMainStr", str)
+
+	strSlice := []string{"aaa", "bbb", "ccc"}
+	AddStrSliceVar("vaporStrSlice", strSlice)
+
+	intSlice := []int{956, 1848, 1956}
+	AddIntSliceVar("vaporIntSlice", intSlice)
+
+	vaporMap := map[string]interface{}{"Béla": 1, "Géza": 2, "Kálmán": 3}
+	AddMapVar("vaporMap", vaporMap)
+
 	for _, name := range filenames {
 		_, err = include("./examples/vapr/" + name)
 		if err != nil {

@@ -44,7 +44,7 @@ func TestNewElement(t *testing.T) {
 		t.Error(err)
 	}
 
-	if ren, err := e.render(); ren != `<div id="my-id" class="my-class"></div>`+"\n" || err != nil {
+	if ren, err := e.render(); ren != `<div class="my-class" id="my-id"></div>`+"\n" || err != nil {
 		t.Error(r)
 	}
 

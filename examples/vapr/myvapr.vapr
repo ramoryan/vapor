@@ -1,4 +1,1 @@
-div#my-id(
-	data-img="nemtudom"
-)
-	| Jujj, hát ez vaporfile!
+div#my-id(data-img="nemtudom") Jujj, hát ez vaporfile!

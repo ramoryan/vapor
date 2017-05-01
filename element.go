@@ -1,6 +1,7 @@
 package vapor
 
 import (
+	"sort"
 	"strings"
 	"unicode"
 )
@@ -29,7 +30,11 @@ func (e *element) render() (string, *vaporError) {
 	if len(e.name) > 0 {
 		s = spc + "<" + e.name
 
-		for _, attr := range e.attributes {
+		keys, _ := getKeys(e.attributes)
+		sort.Strings(keys)
+
+		for _, key := range keys {
+			attr := e.attributes[key]
 			s += " " + attr.render()
 		}
 
